@@ -67,7 +67,7 @@ jobs:
       - name: Run Coverage test
         working-directory: deployment
         run: |
-          cat << EOF | docker-compose exec -T devweb bash
+          cat << EOF | docker exec georepo_dev bash
           python manage.py makemigrations
           python manage.py migrate
           python manage.py collectstatic --noinput --verbosity 0
