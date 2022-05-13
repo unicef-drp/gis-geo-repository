@@ -65,12 +65,10 @@ jobs:
           make sleep
           make create-test-db
       - name: Run Coverage test
-        working-directory: deployment
         run: |
-          cat << EOF | docker exec georepo_dev bash
-          python manage.py makemigrations
-          python manage.py migrate
-          python manage.py collectstatic --noinput --verbosity 0
-          coverage run manage.py test
-          coverage xml
-          EOF
+          make coverage-test
+          docker cp georepo_dev:/home/web/django_project/coverage.html ../coverage.html
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
