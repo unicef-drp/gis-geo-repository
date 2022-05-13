@@ -16,3 +16,4 @@ node_modules/
 bundles/
 webpack-stats.*
 secret.py
+coverage.xml
