@@ -74,8 +74,3 @@ jobs:
           coverage run manage.py test
           coverage xml
           EOF
-          docker cp georepo_dev:/home/web/django_project/coverage.xml ../coverage.xml
-      - name: Upload coverage to codecov
-        uses: codecov/codecov-action@v2
-        with:
-          fail_ci_if_error: true
