@@ -6,13 +6,6 @@ This script initializes
 # Setting up the  context
 #########################################################
 
-import os
-import time
-
-import django
-
-django.setup()
-
 #########################################################
 # Imports
 #########################################################
@@ -20,6 +13,12 @@ from django.db import connection
 from django.db.utils import OperationalError
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
+import os
+import time
+
+import django
+
+django.setup()
 
 # Getting the secrets
 admin_username = os.getenv('ADMIN_USERNAME')
