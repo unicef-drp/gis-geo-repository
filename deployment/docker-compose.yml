@@ -1,0 +1,44 @@
+version: '3.8'
+
+volumes:
+  static-data:
+  media-data:
+  database:
+
+x-common-django:
+  &default-common-django
+  image: kartoza/georepo:${DJANGO_TAG:-0.0.1}
+  environment:
+    # editable in .env
+    - DATABASE_NAME=${DATABASE_NAME:-django}
+    - DATABASE_USERNAME=${DATABASE_USERNAME:-docker}
+    - DATABASE_PASSWORD=${DATABASE_PASSWORD:-docker}
+    - DATABASE_HOST=${DATABASE_HOST:-db}
+    - RABBITMQ_HOST=${RABBITMQ_HOST:-rabbitmq}
+    - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-core.settings.prod}
+    - INITIAL_FIXTURES=${INITIAL_FIXTURES:-True}
+
+    # Email where alters should be sent. This will be used by let's encrypt and as the django admin email.
+    - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+    - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+    - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+    - DSN_TRAVIS=${DSN_TRAVIS:-''}
+  volumes:
+    - static-data:/home/web/static
+    - media-data:/home/web/media
+  restart: on-failure
+
+services:
+  db:
+    image: kartoza/postgis:14-3.2
+    container_name: "georepo_db"
+    environment:
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - POSTGRES_DBNAME=${DATABASE_NAME:-django}
+      - POSTGRES_USER=${DATABASE_USERNAME:-docker}
+      - POSTGRES_PASS=${DATABASE_PASSWORD:-docker}
+
+  django:
+    <<: *default-common-django
+    container_name: "georepo_django"
+    command: 'uwsgi --ini /uwsgi.conf'
