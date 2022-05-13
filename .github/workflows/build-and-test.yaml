@@ -11,11 +11,11 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version:
-          - 3.7
+          - 3.10.4
     steps:
       - uses: actions/checkout@v2
 
@@ -32,7 +32,7 @@ jobs:
 
   django_test:
     name: 'Django Test'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       APP_IMAGE: kartoza/georepo
     steps:
@@ -64,4 +64,18 @@ jobs:
           make wait-db
           make sleep
           make create-test-db
-          make devweb-test
+      - name: Run Coverage test
+        working-directory: deployment
+        run: |
+          cat << EOF | docker-compose exec -T devweb bash
+          python manage.py makemigrations
+          python manage.py migrate
+          python manage.py collectstatic --noinput --verbosity 0
+          coverage run manage.py test
+          coverage xml
+          EOF
+          docker cp georepo_dev:/home/web/django_project/coverage.xml ../coverage.xml
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
