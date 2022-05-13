@@ -3,10 +3,8 @@ services:
   dev:
     image: ${APP_IMAGE}:dev
     container_name: georepo_dev
-    volumes:
-      - ../django_project:/home/web/django_project
-      - ./volumes/static:/home/web/static
-      - ./volumes/media:/home/web/media
+    links:
+      - db:db
     environment:
       # editable in .env
       - DATABASE_NAME=${DATABASE_NAME:-django}
