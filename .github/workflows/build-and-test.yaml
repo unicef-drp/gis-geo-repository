@@ -67,10 +67,16 @@ jobs:
       - name: Run Coverage test
         working-directory: deployment
         run: |
-          cat << EOF | docker exec georepo_dev bash
+          cat << EOF | docker-compose exec -T dev bash
           python manage.py makemigrations
           python manage.py migrate
           python manage.py collectstatic --noinput --verbosity 0
           coverage run manage.py test
           coverage xml
           EOF
+          docker cp georepo_dev:/home/web/django_project/coverage.xml ../coverage.xml
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true

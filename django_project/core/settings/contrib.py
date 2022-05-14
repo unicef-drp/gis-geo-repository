@@ -11,7 +11,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'dashboard/',  # must end with slash
-        'STATS_FILE': ABS_PATH('dashboard', 'webpack-stats.prod.json'),
+        'STATS_FILE': absolute_path('dashboard', 'webpack-stats.prod.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
         'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],

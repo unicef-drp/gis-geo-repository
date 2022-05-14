@@ -3,6 +3,7 @@ version: '3.8'
 volumes:
   static-data:
   media-data:
+  reports-data:
   database:
 
 x-common-django:
@@ -26,6 +27,7 @@ x-common-django:
   volumes:
     - static-data:/home/web/static
     - media-data:/home/web/media
+    - reports-data:/home/web/reports
   restart: on-failure
 
 services:

@@ -46,7 +46,7 @@ LANGUAGES = (
 )
 
 # Set storage path for the translation files
-LOCALE_PATHS = (ABS_PATH('locale'),)
+LOCALE_PATHS = (absolute_path('locale'),)
 
 # Extra installed apps
 INSTALLED_APPS = INSTALLED_APPS + (

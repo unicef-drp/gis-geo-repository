@@ -1,3 +1,4 @@
+from .utils import *
 from .project import *  # noqa
 
 # Set debug to True for development
@@ -62,7 +63,7 @@ LOGGING = {
 }
 
 WEBPACK_LOADER['DEFAULT']['CACHE'] = DEBUG
-WEBPACK_LOADER['DEFAULT']['STATS_FILE'] = ABS_PATH(
+WEBPACK_LOADER['DEFAULT']['STATS_FILE'] = absolute_path(
     'dashboard', 'webpack-stats.dev.json'
 )
 

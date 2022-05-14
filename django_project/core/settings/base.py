@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Django settings for georepo project."""
 
-from core.settings.utils import ABS_PATH
+import os
+from .utils import absolute_path
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -24,7 +25,7 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-BASE_DIR = ABS_PATH('')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
@@ -50,8 +51,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    ABS_PATH('core', 'static'),
-    ABS_PATH('dashboard', 'bundles'),
+    absolute_path('core', 'static'),
+    absolute_path('dashboard', 'bundles'),
 )
 
 # Every cache key will get prefixed with this value - here we set it to
@@ -85,8 +86,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             # Put Templates Hers
-            ABS_PATH('core', 'templates'),
-            ABS_PATH('dashboard', 'templates'),
+            absolute_path('core', 'templates'),
+            absolute_path('dashboard', 'templates'),
         ],
         'OPTIONS': {
             'loaders': [

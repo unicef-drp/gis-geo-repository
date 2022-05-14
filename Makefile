@@ -174,6 +174,7 @@ wait-db:
 create-test-db:
 	@docker-compose ${ARGS} exec -T db su - postgres -c "psql -c 'create database test_db;'"
 
+
 devweb: db
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -195,6 +196,9 @@ devweb-test:
 	@echo "Running in DEVELOPMENT mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose exec -T dev python manage.py test --keepdb --noinput
+
+coverage-test:
+	@docker-compose exec -T dev bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput --verbosity 0 && coverage run manage.py test && coverage xml"
 
 # --------------- TESTS ---------------
 run-flake8:
