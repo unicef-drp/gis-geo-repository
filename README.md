@@ -5,4 +5,4 @@
 
 [![Build and Test](https://github.com/unicef-drp/gis-geo-repository/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/unicef-drp/gis-geo-repository/actions/workflows/build-and-test.yaml)
 [![codecov](https://codecov.io/gh/unicef-drp/gis-geo-repository/branch/develop/graph/badge.svg)](https://codecov.io/gh/unicef-drp/gis-geo-repository/)
-
+[![Build and Test React Application](https://github.com/unicef-drp/gis-geo-repository/actions/workflows/frontend-test.yaml/badge.svg)](https://github.com/unicef-drp/gis-geo-repository/actions/workflows/frontend-test.yaml)
