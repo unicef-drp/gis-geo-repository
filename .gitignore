@@ -13,7 +13,6 @@ __pycache__/
 django_project/.pycharm_helpers/
 celerybeat-schedule*
 node_modules/
-bundles/
 webpack-stats.*
 secret.py
 coverage.xml
