@@ -5,6 +5,10 @@ services:
     container_name: georepo_dev
     links:
       - db:db
+    volumes:
+      - static-data:/home/web/static:rw
+      - media-data:/home/web/media:rw
+      - reports-data:/home/web/reports
     environment:
       # editable in .env
       - DATABASE_NAME=${DATABASE_NAME:-django}
