@@ -10,6 +10,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('django.contrib.auth.urls')),
+    url(r'', include('georepo.urls')),
     url(r'', include('dashboard.urls'))
 ]
 

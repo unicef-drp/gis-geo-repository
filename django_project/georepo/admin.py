@@ -6,6 +6,7 @@ from georepo.models import (
     EntityName
 )
 
+
 class GeographicalEntityAdmin(admin.ModelAdmin):
     list_display = (
         'label', 'level', 'type'
@@ -16,6 +17,10 @@ class GeographicalEntityAdmin(admin.ModelAdmin):
     search_fields = (
         'label',
     )
+
+    def get_queryset(self, request):
+        return GeographicalEntity.objects.filter(id__gte=0)
+
 
 admin.site.register(GeographicalEntity, GeographicalEntityAdmin)
 admin.site.register(Language)

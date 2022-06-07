@@ -59,7 +59,8 @@ class GeographicalEntity(models.Model):
         'self',
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name='children'
     )
 
     type = models.ForeignKey(
@@ -74,6 +75,16 @@ class GeographicalEntity(models.Model):
 
     def __str__(self):
         return self.label
+
+    def get_all_children(self):
+        children = [self]
+        try:
+            child_list = self.children.all()
+        except AttributeError:
+            return children
+        for child in child_list:
+            children.extend(child.get_all_children())
+        return children
 
 
 class EntityName(models.Model):
