@@ -51,5 +51,6 @@ LOCALE_PATHS = (absolute_path('locale'),)
 # Extra installed apps
 INSTALLED_APPS = INSTALLED_APPS + (
     'core',
+    'georepo',
     'dashboard'
 )
