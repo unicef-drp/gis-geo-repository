@@ -28,7 +28,7 @@ frontend-dev:
 	@echo "------------------------------------------------------------------"
 	@echo "Run frontend dev"
 	@echo "------------------------------------------------------------------"
-	@cd django_project/frontend; npm install; npm run dev;
+	@cd django_project/dashboard; npm install; npm run dev;
 
 dev:
 	@echo

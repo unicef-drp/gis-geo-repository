@@ -3,12 +3,17 @@ services:
   db:
     volumes:
       - ./volumes/backups:/backups
-  django:
+  dev:
     build:
       context: ../
       dockerfile: deployment/docker/Dockerfile
-      target: prod
+      target: dev
     volumes:
       - ../django_project:/home/web/django_project
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
+    ports:
+      # for django test server
+      - "51102:8080"
+      # for ssh
+      - "51103:22"
