@@ -1,11 +1,16 @@
-from django.conf.urls import url, include
+from django.conf.urls import url
+from django.urls import path
 from georepo.api_views.reference_layer_list import (
     ReferenceLayerList
 )
+from georepo.api_views.reference_layer import ReferenceLayer
 
 
 urlpatterns = [
-    url(r'^api/reference-layer-list/$',
+    path('api/reference-layer/<uuid:uuid>/<str:entity_type>/',
+        ReferenceLayer.as_view(),
+        name='reference-layer'),
+    path('api/reference-layer/list/',
          ReferenceLayerList.as_view(),
-         name='reference-layer-list')
+         name='reference-layer-list'),
 ]
