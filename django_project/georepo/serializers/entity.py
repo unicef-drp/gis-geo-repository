@@ -51,7 +51,7 @@ class GeographicalEntitySerializer(serializers.ModelSerializer):
         return LevelEntitySerializer(
             entities,
             context={
-              'uuid': obj.uuid
+                'uuid': obj.uuid
             },
             many=True
         ).data
