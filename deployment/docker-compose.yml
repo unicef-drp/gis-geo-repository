@@ -44,3 +44,8 @@ services:
     <<: *default-common-django
     container_name: "georepo_django"
     command: 'uwsgi --ini /uwsgi.conf'
+
+  dev:
+    <<: *default-common-django
+    container_name: "georepo_dev_django"
+    entrypoint: []
