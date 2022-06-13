@@ -18,6 +18,12 @@ class Command(BaseCommand):
             '--name_field'
         )
         parser.add_argument(
+            '--code_field'
+        )
+        parser.add_argument(
+            '--dataset'
+        )
+        parser.add_argument(
             '--type',
             required=True
         )
@@ -36,6 +42,8 @@ class Command(BaseCommand):
             int(options['level']),
             options['name_field'],
             entity_type,
+            options['dataset'],
+            options['code_field'],
             parent_field=options['parent_field']
         )
 

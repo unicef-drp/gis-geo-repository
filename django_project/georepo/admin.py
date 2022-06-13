@@ -4,7 +4,9 @@ from georepo.models import (
     Language,
     EntityType,
     EntityName,
-    Dataset
+    Dataset,
+    CodeCL,
+    EntityCode
 )
 
 
@@ -39,4 +41,6 @@ admin.site.register(GeographicalEntity, GeographicalEntityAdmin)
 admin.site.register(Language)
 admin.site.register(EntityType)
 admin.site.register(EntityName)
+admin.site.register(CodeCL)
+admin.site.register(EntityCode)
 admin.site.register(Dataset, DatasetAdmin)
