@@ -30,6 +30,7 @@ class LevelEntitySerializer(serializers.ModelSerializer):
 
 class GeographicalEntitySerializer(serializers.ModelSerializer):
     levels = serializers.SerializerMethodField()
+    vector_tiles = serializers.SerializerMethodField()
 
     class Meta:
         model = GeographicalEntity
@@ -37,8 +38,14 @@ class GeographicalEntitySerializer(serializers.ModelSerializer):
             'label',
             'uuid',
             'source',
-            'levels'
+            'levels',
+            'vector_tiles'
         ]
+
+    def get_vector_tiles(self, obj: GeographicalEntity):
+        if obj.dataset.vector_tiles_path:
+            return f'{obj.dataset.vector_tiles_path}/{{z}}/{{x}}/{{y}}'
+        return '-'
 
     def get_levels(self, obj: GeographicalEntity):
         all_children = obj.get_all_children()

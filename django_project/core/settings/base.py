@@ -88,6 +88,7 @@ TEMPLATES = [
             # Put Templates Hers
             absolute_path('core', 'templates'),
             absolute_path('dashboard', 'templates'),
+            absolute_path('georepo', 'templates'),
         ],
         'OPTIONS': {
             'loaders': [

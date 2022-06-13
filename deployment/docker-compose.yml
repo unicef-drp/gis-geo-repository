@@ -4,6 +4,9 @@ volumes:
   static-data:
   media-data:
   reports-data:
+  conf-data:
+  tegola-data:
+  layer-tiles:
   database:
 
 x-common-django:
@@ -16,6 +19,7 @@ x-common-django:
     - DATABASE_PASSWORD=${DATABASE_PASSWORD:-docker}
     - DATABASE_HOST=${DATABASE_HOST:-db}
     - RABBITMQ_HOST=${RABBITMQ_HOST:-rabbitmq}
+    - LAYER_TILES_PATH=${LAYER_TILES_PATH:-/opt/layer_tiles}
     - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-core.settings.prod}
     - INITIAL_FIXTURES=${INITIAL_FIXTURES:-True}
 
@@ -28,6 +32,8 @@ x-common-django:
     - static-data:/home/web/static
     - media-data:/home/web/media
     - reports-data:/home/web/reports
+    - tegola-data:/opt/tegola_config
+    - layer-tiles:/opt/layer_tiles
   restart: on-failure
 
 services:
@@ -49,3 +55,14 @@ services:
     <<: *default-common-django
     container_name: "georepo_dev_django"
     entrypoint: []
+
+  nginx:
+    image: nginx
+    hostname: nginx
+    volumes:
+      - conf-data:/etc/nginx/conf.d:ro
+      - static-data:/home/web/static
+      - media-data:/home/web/media
+      - layer-tiles:/home/web/layer_tiles
+    links:
+      - django

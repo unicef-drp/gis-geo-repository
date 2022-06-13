@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/css/ol.css">
+        <style>
+            html, body { height: 100%; width: 100%}
+            #map{height:100%;width:100%;}
+        </style>
+        <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
+        <title>OpenLayers example</title>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script type="text/javascript">
+            var defaultStyle = new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: [234, 231, 221, 0.3]
+                }),
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255,3,3,0.4)',
+                    width: 1
+                })
+            });
+            var entityStyle = new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: [28,121,181,0.2]
+                }),
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255,211,0,0.45)',
+                    width: 1
+                })
+            });
+            function styleFunction(feature, resolution){
+                if (feature.get('level') === 2) {
+                    return [entityStyle]
+                }
+                if (feature.get('level') === 1) {
+                    return [defaultStyle]
+                }
+
+            }
+            var map = new ol.Map({
+                target: 'map',
+                layers: [
+                    new ol.layer.Tile({
+                      source: new ol.source.OSM(),
+                    }),
+                    new ol.layer.VectorTile({
+                        source: new ol.source.VectorTile({
+                            format: new ol.format.MVT(),
+                            url:'http://192.168.50.197:51101/layer_tiles/Somalia/{z}/{x}/{y}'
+                        }),
+                        style:styleFunction
+                    })
+                ],
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([45.318161,2.046934]), //coordinates the map will center on initially
+                    zoom: 6
+                })
+            });
+        </script>
+    </body>
+</html>
