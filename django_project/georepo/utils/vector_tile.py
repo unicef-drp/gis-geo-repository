@@ -41,7 +41,7 @@ def create_configuration_file(dataset: Dataset) -> str:
             'INNER JOIN georepo_entitytype ge on ge.id = gg.type_id '
             'WHERE geometry && !BBOX! and level = {level} '
             'AND gg.dataset_id = {dataset_id}'.
-                format(
+            format(
                 level=level,
                 dataset_id=dataset.id
             ))
