@@ -37,8 +37,10 @@ def create_configuration_file(dataset: Dataset) -> str:
     for level in levels:
         sql = (
             'SELECT ST_AsBinary(geometry) AS geometry, gg.id, gg.label, '
-            'gg.level, ge.label as type FROM georepo_geographicalentity gg '
+            'gg.level, ge.label as type, g.code '
+            'FROM georepo_geographicalentity gg '
             'INNER JOIN georepo_entitytype ge on ge.id = gg.type_id '
+            'INNER JOIN georepo_entitycode g on gg.id = g.entity_id '
             'WHERE geometry && !BBOX! and level = {level} '
             'AND gg.dataset_id = {dataset_id}'.
             format(

@@ -3,7 +3,13 @@ import json
 
 from django.contrib.gis.geos import GEOSGeometry, Polygon, MultiPolygon
 
-from georepo.models import GeographicalEntity, EntityType
+from georepo.models import (
+    GeographicalEntity,
+    EntityType,
+    CodeCL,
+    EntityCode,
+    Dataset
+)
 
 
 def load_geojson(
@@ -11,6 +17,8 @@ def load_geojson(
         level: int,
         name_field: str,
         entity_type: EntityType,
+        dataset: str = None,
+        code_field: str = None,
         parent_field: str = None) -> bool:
     if not os.path.exists(file_path):
         return False
@@ -28,14 +36,34 @@ def load_geojson(
             raise TypeError(
                 'Type is not acceptable'
             )
+        label = f'admin{level}{name_field}'
+        code = f'admin{level}{code_field}'
+
+        if dataset:
+            dataset, _ = Dataset.objects.get_or_create(
+                label=dataset
+            )
+
         entity, _ = GeographicalEntity.objects.get_or_create(
-            label=properties[name_field],
+            label=properties[label],
             level=level,
             type=entity_type,
             defaults={
-                'geometry': geom
+                'geometry': geom,
+                'dataset': dataset,
             }
         )
+
+        if code:
+            code_cl, _ = CodeCL.objects.get_or_create(
+                name='admin'
+            )
+            EntityCode.objects.get_or_create(
+                code_cl=code_cl,
+                entity=entity,
+                code=properties[code]
+            )
+
         if parent_field:
             try:
                 parent = GeographicalEntity.objects.get(
