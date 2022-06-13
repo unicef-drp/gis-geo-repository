@@ -5,6 +5,13 @@ from django.contrib.gis.db import models
 class GeographicalEntity(models.Model):
     id = models.AutoField(primary_key=True)
 
+    dataset = models.ForeignKey(
+        'georepo.Dataset',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
     uuid = models.UUIDField(
         default=uuid.uuid4
     )
