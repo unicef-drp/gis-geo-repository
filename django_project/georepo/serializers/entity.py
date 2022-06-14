@@ -7,6 +7,7 @@ from georepo.models import GeographicalEntity
 class LevelEntitySerializer(serializers.ModelSerializer):
     level_name = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
+    vector_layer = serializers.SerializerMethodField()
 
     class Meta:
         model = GeographicalEntity
@@ -14,7 +15,8 @@ class LevelEntitySerializer(serializers.ModelSerializer):
         fields = [
             'level',
             'level_name',
-            'url'
+            'url',
+            'vector_layer'
         ]
 
     def get_level_name(self, obj):
@@ -26,6 +28,15 @@ class LevelEntitySerializer(serializers.ModelSerializer):
             'uuid': uuid,
             'entity_type': self.get_level_name(obj)
         })
+
+    def get_vector_layer(self, obj: GeographicalEntity):
+        vector_layers = obj.dataset.layerstyle_set.filter(
+            level=obj.level
+        )
+        vector_layer_data = []
+        for vector_layer in vector_layers:
+            vector_layer_data.append(vector_layer.vector_layer_obj)
+        return vector_layer_data
 
 
 class GeographicalEntitySerializer(serializers.ModelSerializer):

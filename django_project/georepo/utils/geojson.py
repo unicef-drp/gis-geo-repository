@@ -18,13 +18,17 @@ def load_geojson(
         name_field: str,
         entity_type: EntityType,
         dataset: str = None,
-        code_field: str = None,
-        parent_field: str = None) -> bool:
+        code_field: str = None) -> bool:
     if not os.path.exists(file_path):
         return False
 
     with open(file_path) as json_file:
         data = json.load(json_file)
+
+    if dataset:
+        dataset, _ = Dataset.objects.get_or_create(
+            label=dataset
+        )
 
     for feature in data['features']:
         geom_str = json.dumps(feature['geometry'])
@@ -39,20 +43,18 @@ def load_geojson(
         label = f'admin{level}{name_field}'
         code = f'admin{level}{code_field}'
 
-        if dataset:
-            dataset, _ = Dataset.objects.get_or_create(
-                label=dataset
-            )
-
         entity, _ = GeographicalEntity.objects.get_or_create(
             label=properties[label],
-            level=level,
             type=entity_type,
             defaults={
                 'geometry': geom,
                 'dataset': dataset,
+                'level': level,
             }
         )
+
+        entity.level = level
+        entity.save()
 
         if code:
             code_cl, _ = CodeCL.objects.get_or_create(
@@ -64,8 +66,9 @@ def load_geojson(
                 code=properties[code]
             )
 
-        if parent_field:
+        if level > 0:
             try:
+                parent_field = f'admin{level - 1}{name_field}'
                 parent = GeographicalEntity.objects.get(
                     label__iexact=properties[parent_field],
                     level=level - 1
