@@ -2,6 +2,7 @@ import subprocess
 import logging
 import toml
 import os
+import time
 
 from core.settings.utils import absolute_path
 from georepo.models import Dataset
@@ -88,5 +89,7 @@ def generate_vector_tiles(dataset: Dataset, overwrite: bool = False):
             '--overwrite' if overwrite else '',
         ]
     )
-    dataset.vector_tiles_path = f'/layer_tiles/{dataset.label}'
+    dataset.vector_tiles_path = (
+        f'/layer_tiles/{dataset.label}/{{z}}/{{x}}/{{y}}?t={int(time.time())}'
+    )
     dataset.save()

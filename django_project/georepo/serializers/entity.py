@@ -55,7 +55,7 @@ class GeographicalEntitySerializer(serializers.ModelSerializer):
 
     def get_vector_tiles(self, obj: GeographicalEntity):
         if obj.dataset.vector_tiles_path:
-            return f'{obj.dataset.vector_tiles_path}/{{z}}/{{x}}/{{y}}'
+            return f'{obj.dataset.vector_tiles_path}'
         return '-'
 
     def get_levels(self, obj: GeographicalEntity):
