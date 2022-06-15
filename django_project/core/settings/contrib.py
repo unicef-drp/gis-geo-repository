@@ -8,6 +8,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'rest_framework_gis',
     'drf_yasg',
     'webpack_loader',
+    'django_json_widget',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {

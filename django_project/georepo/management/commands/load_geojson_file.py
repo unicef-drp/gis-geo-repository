@@ -43,8 +43,7 @@ class Command(BaseCommand):
             options['name_field'],
             entity_type,
             options['dataset'],
-            options['code_field'],
-            parent_field=options['parent_field']
+            options['code_field']
         )
 
         print('Geojson loaded : {}'.format(geojson_loaded))
