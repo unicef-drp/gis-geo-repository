@@ -1,11 +1,28 @@
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from georepo.models import GeographicalEntity
-from georepo.serializers.entity import GeographicalGeojsonSerializer
+from georepo.serializers.entity import (
+    GeographicalGeojsonSerializer,
+    DetailedEntitySerializer
+)
 
 
-class ReferenceLayer(APIView):
+class ReferenceLayerDetail(APIView):
+    """
+    API to get reference layer detail
+    """
+    def get(self, request, uuid=None, *args, **kwargs):
+        entity_layer = get_object_or_404(
+            GeographicalEntity, uuid=uuid
+        )
+        return Response(
+            DetailedEntitySerializer(entity_layer).data
+        )
+
+
+class ReferenceLayerGeojson(APIView):
     """
     Reference Layer in Geojson.
     """

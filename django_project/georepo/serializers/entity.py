@@ -24,7 +24,7 @@ class LevelEntitySerializer(serializers.ModelSerializer):
 
     def get_url(self, obj: GeographicalEntity):
         uuid = self.context['uuid'] if 'uuid' in self.context else obj.uuid
-        return reverse('reference-layer', kwargs={
+        return reverse('reference-layer-geojson', kwargs={
             'uuid': uuid,
             'entity_type': self.get_level_name(obj)
         })
@@ -39,7 +39,7 @@ class LevelEntitySerializer(serializers.ModelSerializer):
         return vector_layer_data
 
 
-class GeographicalEntitySerializer(serializers.ModelSerializer):
+class EntitySerializer(serializers.ModelSerializer):
     levels = serializers.SerializerMethodField()
     vector_tiles = serializers.SerializerMethodField()
 
@@ -93,3 +93,7 @@ class GeographicalGeojsonSerializer(GeoFeatureModelSerializer):
             'name',
             'level_name'
         ]
+
+
+class DetailedEntitySerializer(EntitySerializer):
+    pass

@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from georepo.models import GeographicalEntity
-from georepo.serializers.entity import GeographicalEntitySerializer
+from georepo.serializers.entity import EntitySerializer
 
 
 class ReferenceLayerList(APIView):
@@ -13,7 +13,7 @@ class ReferenceLayerList(APIView):
         parent_entities = GeographicalEntity.objects.filter(
             parent__isnull=True
         )
-        serializer = GeographicalEntitySerializer(
+        serializer = EntitySerializer(
             parent_entities,
             many=True
         )
