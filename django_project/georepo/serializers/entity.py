@@ -24,7 +24,7 @@ class LevelEntitySerializer(serializers.ModelSerializer):
 
     def get_url(self, obj: GeographicalEntity):
         uuid = self.context['uuid'] if 'uuid' in self.context else obj.uuid
-        return reverse('reference-layer', kwargs={
+        return reverse('reference-layer-geojson', kwargs={
             'uuid': uuid,
             'entity_type': self.get_level_name(obj)
         })
@@ -39,18 +39,64 @@ class LevelEntitySerializer(serializers.ModelSerializer):
         return vector_layer_data
 
 
-class GeographicalEntitySerializer(serializers.ModelSerializer):
+class EntitySerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    identifier = serializers.SerializerMethodField()
+    last_update = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GeographicalEntity
+        fields = [
+            'name',
+            'identifier',
+            'last_update'
+        ]
+
+    def get_name(self, obj: GeographicalEntity):
+        return obj.label
+
+    def get_identifier(self, obj: GeographicalEntity):
+        return obj.uuid
+
+    def get_last_update(self, obj: GeographicalEntity):
+        if obj.dataset.last_update:
+            return obj.dataset.last_update
+        return ''
+
+
+class GeographicalGeojsonSerializer(GeoFeatureModelSerializer):
+    name = serializers.SerializerMethodField()
+    level_name = serializers.SerializerMethodField()
+
+    def get_name(self, obj: GeographicalEntity):
+        return obj.label
+
+    def get_level_name(self, obj: GeographicalEntity):
+        return obj.type.label
+
+    class Meta:
+        model = GeographicalEntity
+        geo_field = 'geometry'
+        fields = [
+            'id',
+            'name',
+            'level_name'
+        ]
+
+
+class DetailedEntitySerializer(EntitySerializer):
     levels = serializers.SerializerMethodField()
     vector_tiles = serializers.SerializerMethodField()
 
     class Meta:
         model = GeographicalEntity
         fields = [
-            'label',
-            'uuid',
+            'name',
+            'identifier',
             'source',
             'levels',
-            'vector_tiles'
+            'vector_tiles',
+            'last_update'
         ]
 
     def get_vector_tiles(self, obj: GeographicalEntity):
@@ -73,23 +119,3 @@ class GeographicalEntitySerializer(serializers.ModelSerializer):
             },
             many=True
         ).data
-
-
-class GeographicalGeojsonSerializer(GeoFeatureModelSerializer):
-    name = serializers.SerializerMethodField()
-    level_name = serializers.SerializerMethodField()
-
-    def get_name(self, obj: GeographicalEntity):
-        return obj.label
-
-    def get_level_name(self, obj: GeographicalEntity):
-        return obj.type.label
-
-    class Meta:
-        model = GeographicalEntity
-        geo_field = 'geometry'
-        fields = [
-            'id',
-            'name',
-            'level_name'
-        ]

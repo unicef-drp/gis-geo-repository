@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Dataset(models.Model):
@@ -15,6 +16,15 @@ class Dataset(models.Model):
         blank=True,
         default=''
     )
+
+    last_update = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        self.last_update = timezone.now()
+        return super(Dataset, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.label
