@@ -40,39 +40,28 @@ class LevelEntitySerializer(serializers.ModelSerializer):
 
 
 class EntitySerializer(serializers.ModelSerializer):
-    levels = serializers.SerializerMethodField()
-    vector_tiles = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    identifier = serializers.SerializerMethodField()
+    last_update = serializers.SerializerMethodField()
 
     class Meta:
         model = GeographicalEntity
         fields = [
-            'label',
-            'uuid',
-            'source',
-            'levels',
-            'vector_tiles'
+            'name',
+            'identifier',
+            'last_update'
         ]
 
-    def get_vector_tiles(self, obj: GeographicalEntity):
-        if obj.dataset.vector_tiles_path:
-            return f'{obj.dataset.vector_tiles_path}'
-        return '-'
+    def get_name(self, obj: GeographicalEntity):
+        return obj.label
 
-    def get_levels(self, obj: GeographicalEntity):
-        all_children = obj.get_all_children()
-        levels = []
-        entities = []
-        for entity in all_children:
-            if entity.level not in levels:
-                levels.append(entity.level)
-                entities.append(entity)
-        return LevelEntitySerializer(
-            entities,
-            context={
-                'uuid': obj.uuid
-            },
-            many=True
-        ).data
+    def get_identifier(self, obj: GeographicalEntity):
+        return obj.uuid
+
+    def get_last_update(self, obj: GeographicalEntity):
+        if obj.dataset.last_update:
+            return obj.dataset.last_update
+        return ''
 
 
 class GeographicalGeojsonSerializer(GeoFeatureModelSerializer):
@@ -96,4 +85,37 @@ class GeographicalGeojsonSerializer(GeoFeatureModelSerializer):
 
 
 class DetailedEntitySerializer(EntitySerializer):
-    pass
+    levels = serializers.SerializerMethodField()
+    vector_tiles = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GeographicalEntity
+        fields = [
+            'name',
+            'identifier',
+            'source',
+            'levels',
+            'vector_tiles',
+            'last_update'
+        ]
+
+    def get_vector_tiles(self, obj: GeographicalEntity):
+        if obj.dataset.vector_tiles_path:
+            return f'{obj.dataset.vector_tiles_path}'
+        return '-'
+
+    def get_levels(self, obj: GeographicalEntity):
+        all_children = obj.get_all_children()
+        levels = []
+        entities = []
+        for entity in all_children:
+            if entity.level not in levels:
+                levels.append(entity.level)
+                entities.append(entity)
+        return LevelEntitySerializer(
+            entities,
+            context={
+                'uuid': obj.uuid
+            },
+            many=True
+        ).data
