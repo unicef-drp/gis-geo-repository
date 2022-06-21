@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from django.urls import reverse
-from georepo.models import GeographicalEntity, EntityCode
+from georepo.models import GeographicalEntity
 
 
 class LevelEntitySerializer(serializers.ModelSerializer):
