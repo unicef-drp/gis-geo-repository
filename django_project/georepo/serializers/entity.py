@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from django.urls import reverse
-from georepo.models import GeographicalEntity
+from georepo.models import GeographicalEntity, EntityCode
 
 
 class LevelEntitySerializer(serializers.ModelSerializer):
@@ -64,9 +64,10 @@ class EntitySerializer(serializers.ModelSerializer):
         return ''
 
 
-class GeographicalGeojsonSerializer(GeoFeatureModelSerializer):
+class GeographicalEntitySerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     level_name = serializers.SerializerMethodField()
+    identifier = serializers.SerializerMethodField()
 
     def get_name(self, obj: GeographicalEntity):
         return obj.label
@@ -74,13 +75,38 @@ class GeographicalGeojsonSerializer(GeoFeatureModelSerializer):
     def get_level_name(self, obj: GeographicalEntity):
         return obj.type.label
 
+    def get_identifier(self, obj: GeographicalEntity):
+        identifier = obj.entitycode_set.all().exclude(
+            code_cl__isnull=True
+        )
+        if identifier.exists():
+            return dict(identifier.values_list(
+                'code_cl__name',
+                'code',
+            ))
+        return '-'
+
+    class Meta:
+        model = GeographicalEntity
+        fields = [
+            'id',
+            'name',
+            'level_name',
+            'identifier'
+        ]
+
+
+class GeographicalGeojsonSerializer(
+    GeographicalEntitySerializer, GeoFeatureModelSerializer):
+
     class Meta:
         model = GeographicalEntity
         geo_field = 'geometry'
         fields = [
             'id',
             'name',
-            'level_name'
+            'level_name',
+            'identifier'
         ]
 
 
