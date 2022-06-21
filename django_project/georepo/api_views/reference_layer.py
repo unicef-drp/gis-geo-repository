@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from georepo.models import GeographicalEntity
 from georepo.serializers.entity import (
     GeographicalGeojsonSerializer,
+    GeographicalEntitySerializer,
     DetailedEntitySerializer
 )
 
@@ -22,10 +23,14 @@ class ReferenceLayerDetail(APIView):
         )
 
 
-class ReferenceLayerGeojson(APIView):
+class ReferenceLayerEntityList(APIView):
     """
-    Reference Layer in Geojson.
+    Reference layer list per entity type
     """
+
+    def get_serializer(self):
+        return GeographicalEntitySerializer
+
     def get(self, request, uuid=None, entity_type=None, *args, **kwargs):
         try:
             entity_layer = GeographicalEntity.objects.get(
@@ -41,7 +46,15 @@ class ReferenceLayerGeojson(APIView):
                 entities.append(children)
 
         geojson_output = (
-            GeographicalGeojsonSerializer(entities, many=True).data
+            self.get_serializer()(entities, many=True).data
         )
 
         return Response(geojson_output)
+
+
+class ReferenceLayerGeojson(ReferenceLayerEntityList):
+    """
+    Reference Layer in Geojson.
+    """
+    def get_serializer(self):
+        return GeographicalGeojsonSerializer

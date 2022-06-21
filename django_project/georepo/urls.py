@@ -6,6 +6,7 @@ from georepo.api_views.reference_layer_list import (
 )
 from georepo.api_views.reference_layer import (
     ReferenceLayerGeojson,
+    ReferenceLayerEntityList,
     ReferenceLayerDetail
 )
 
@@ -18,6 +19,11 @@ urlpatterns = [
         r'api/reference-layer/(?P<uuid>[\da-f-]+)/(?P<entity_type>\w+)/?$',
         ReferenceLayerGeojson.as_view(),
         name='reference-layer-geojson'),
+    re_path(
+        r'api/reference-layer/(?P<uuid>[\da-f-]+)/'
+        r'(?P<entity_type>\w+)/list/?$',
+        ReferenceLayerEntityList.as_view(),
+        name='reference-layer-entity-list'),
     re_path(
         r'api/reference-layer/(?P<uuid>[\da-f-]+)/?$',
         ReferenceLayerDetail.as_view(),
