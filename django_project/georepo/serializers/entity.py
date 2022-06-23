@@ -97,7 +97,8 @@ class GeographicalEntitySerializer(serializers.ModelSerializer):
 
 
 class GeographicalGeojsonSerializer(
-    GeographicalEntitySerializer, GeoFeatureModelSerializer):
+    GeographicalEntitySerializer,
+    GeoFeatureModelSerializer):
 
     class Meta:
         model = GeographicalEntity
