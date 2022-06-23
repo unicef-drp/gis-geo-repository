@@ -29,6 +29,8 @@ class ReferenceLayerEntityList(APIView):
     """
 
     def get_serializer(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return None
         return GeographicalEntitySerializer
 
     def get(self, request, uuid=None, entity_type=None, *args, **kwargs):
@@ -57,4 +59,6 @@ class ReferenceLayerGeojson(ReferenceLayerEntityList):
     Reference Layer in Geojson.
     """
     def get_serializer(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return None
         return GeographicalGeojsonSerializer
