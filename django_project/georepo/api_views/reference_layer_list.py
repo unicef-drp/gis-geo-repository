@@ -1,15 +1,15 @@
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from georepo.models import GeographicalEntity
+from georepo.api_views.api_cache import ApiCache
+from georepo.models import GeographicalEntity, Dataset
 from georepo.serializers.entity import EntitySerializer
 
 
-class ReferenceLayerList(APIView):
+class ReferenceLayerList(ApiCache):
     """
     View to list all reference layers in the system
     """
+    cache_model = Dataset
 
-    def get(self, request, format=None) -> Response:
+    def get_response_data(self, request, *args, **kwargs):
         parent_entities = GeographicalEntity.objects.filter(
             parent__isnull=True
         )
@@ -17,4 +17,4 @@ class ReferenceLayerList(APIView):
             parent_entities,
             many=True
         )
-        return Response(serializer.data)
+        return serializer.data

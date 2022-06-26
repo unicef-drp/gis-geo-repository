@@ -1,8 +1,7 @@
 from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from georepo.models import GeographicalEntity
+from georepo.api_views.api_cache import ApiCache
+from georepo.models import GeographicalEntity, Dataset
 from georepo.serializers.entity import (
     GeographicalGeojsonSerializer,
     GeographicalEntitySerializer,
@@ -10,36 +9,43 @@ from georepo.serializers.entity import (
 )
 
 
-class ReferenceLayerDetail(APIView):
+class ReferenceLayerDetail(ApiCache):
     """
     API to get reference layer detail
     """
-    def get(self, request, uuid=None, *args, **kwargs):
+    cache_model = Dataset
+
+    def get_response_data(self, request, *args, **kwargs):
+        uuid = kwargs.get('uuid', None)
         entity_layer = get_object_or_404(
             GeographicalEntity, uuid=uuid
         )
-        return Response(
+        response_data = (
             DetailedEntitySerializer(entity_layer).data
         )
+        return response_data
 
 
-class ReferenceLayerEntityList(APIView):
+class ReferenceLayerEntityList(ApiCache):
     """
     Reference layer list per entity type
     """
+    cache_model = Dataset
 
     def get_serializer(self):
         if getattr(self, 'swagger_fake_view', False):
             return None
         return GeographicalEntitySerializer
 
-    def get(self, request, uuid=None, entity_type=None, *args, **kwargs):
+    def get_response_data(self, request, *args, **kwargs):
+        uuid = kwargs.get('uuid', None)
+        entity_type = kwargs.get('entity_type', None)
         try:
             entity_layer = GeographicalEntity.objects.get(
                 uuid=uuid
             )
         except GeographicalEntity.DoesNotExist:
-            return Response([])
+            return []
 
         all_children = entity_layer.get_all_children()
         entities = []
@@ -50,8 +56,7 @@ class ReferenceLayerEntityList(APIView):
         geojson_output = (
             self.get_serializer()(entities, many=True).data
         )
-
-        return Response(geojson_output)
+        return geojson_output
 
 
 class ReferenceLayerGeojson(ReferenceLayerEntityList):
