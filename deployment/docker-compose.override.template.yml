@@ -6,6 +6,15 @@ services:
       - ./volumes/backups:/backups
     ports:
       - "4432:5432"
+
+  django:
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/static:/home/web/static
+      - ./volumes/media:/home/web/media
+      - ./volumes/tegola_config:/opt/tegola_config
+      - ./volumes/layer_tiles:/opt/layer_tiles
+      - ./volumes/django_cache:/home/web/django_cache
   dev:
     build:
       context: ../
@@ -17,11 +26,13 @@ services:
       - ./volumes/media:/home/web/media
       - ./volumes/tegola_config:/opt/tegola_config
       - ./volumes/layer_tiles:/opt/layer_tiles
+      - ./volumes/django_cache:/home/web/django_cache
     ports:
       # for django test server
       - "51102:8080"
       # for ssh
       - "51103:22"
+      - "51105:8081"
 
   nginx:
     volumes:
@@ -31,3 +42,31 @@ services:
       - ./volumes/layer_tiles:/home/web/layer_tiles
     ports:
       - "${HTTP_PORT:-8080}:80"
+      - "9000:9000"
+      - "9001:9001"
+    links:
+      - django
+      - minio
+
+
+  minio:
+    image: minio/minio:RELEASE.2022-06-17T02-00-35Z.fips
+    command: server /data --console-address ":9001"
+    hostname: minio1
+    volumes:
+      - ./volumes/minio-data:/data
+      - ./volumes/layer_tiles:/layer-tiles
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=adminadmin
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=minio123
+
+  mc:
+    image: minio/mc
+    entrypoint: tail -f /dev/null
+    volumes:
+      - ./volumes/layer_tiles:/layer-tiles
+    container_name: miniomc
+    depends_on:
+      - minio

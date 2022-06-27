@@ -21,7 +21,7 @@ web:
 	@echo "------------------------------------------------------------------"
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose up -d
+	@docker-compose up -d django
 
 frontend-dev:
 	@echo
@@ -37,7 +37,6 @@ dev:
 	@echo "------------------------------------------------------------------"
 	@docker-compose ${ARGS} up -d dev
 	@docker-compose ${ARGS} up --no-recreate --no-deps -d
-	@docker exec $(PROJECT_ID)_dev python manage.py runserver 0.0.0.0:8080
 
 dev-kill:
 	@echo
@@ -161,6 +160,13 @@ help:
 # Note that pycharm will copy in resources to the /root/ user folder
 # for pydevd etc. If they dont get copied, restart pycharm...
 # ----------------------------------------------------------------------------
+tegola:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running tegola in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose ${ARGS} up -d tegola
+
 db:
 	@echo
 	@echo "------------------------------------------------------------------"

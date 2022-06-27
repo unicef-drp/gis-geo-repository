@@ -8,6 +8,7 @@ volumes:
   tegola-data:
   layer-tiles:
   database:
+  django-cache:
 
 x-common-django:
   &default-common-django
@@ -34,6 +35,7 @@ x-common-django:
     - reports-data:/home/web/reports
     - tegola-data:/opt/tegola_config
     - layer-tiles:/opt/layer_tiles
+    - django-cache:/home/web/django_cache
   restart: on-failure
 
 services:

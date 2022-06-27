@@ -13,3 +13,4 @@ Sphinx
 # pdb plus plus
 pdbpp
 responses
+mock==4.0.3
