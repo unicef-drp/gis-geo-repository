@@ -44,7 +44,9 @@ class GeographicalEntity(models.Model):
 
     is_latest = models.BooleanField(default=False)
 
-    geometry = models.MultiPolygonField()
+    geometry = models.MultiPolygonField(
+        null=True
+    )
 
     source = models.CharField(
         max_length=255,
