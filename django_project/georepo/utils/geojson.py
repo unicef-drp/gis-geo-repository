@@ -46,7 +46,7 @@ def load_geojson(
         if label not in properties or code not in properties:
             continue
 
-        entity, _ = GeographicalEntity.objects.get_or_create(
+        entity, _ = GeographicalEntity.objects.update_or_create(
             label=properties[label],
             type=entity_type,
             internal_code=properties[code],

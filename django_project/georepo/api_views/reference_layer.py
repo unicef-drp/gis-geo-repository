@@ -47,11 +47,14 @@ class ReferenceLayerEntityList(ApiCache):
         except GeographicalEntity.DoesNotExist:
             return []
 
-        all_children = entity_layer.get_all_children()
-        entities = []
-        for children in all_children:
-            if children.type.label == entity_type:
-                entities.append(children)
+        dataset = entity_layer.dataset
+        entities = GeographicalEntity.objects.filter(
+            dataset=dataset
+        )
+        if entity_type:
+            entities = entities.filter(
+                type__label=entity_type
+            )
 
         geojson_output = (
             self.get_serializer()(entities, many=True).data

@@ -23,6 +23,9 @@ class GeographicalEntityAdmin(admin.ModelAdmin):
     search_fields = (
         'label',
     )
+    raw_id_fields = (
+        'parent',
+    )
 
     def get_queryset(self, request):
         return GeographicalEntity.objects.filter(id__gte=0)
