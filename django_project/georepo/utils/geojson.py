@@ -40,12 +40,16 @@ def load_geojson(
             raise TypeError(
                 'Type is not acceptable'
             )
-        label = f'admin{level}{name_field}'
-        code = f'admin{level}{code_field}'
+        label = f'{name_field}'
+        code = f'{code_field}'
+
+        if label not in properties or code not in properties:
+            continue
 
         entity, _ = GeographicalEntity.objects.get_or_create(
             label=properties[label],
             type=entity_type,
+            internal_code=properties[code],
             defaults={
                 'geometry': geom,
                 'dataset': dataset,
@@ -56,21 +60,26 @@ def load_geojson(
         entity.level = level
         entity.save()
 
-        if code:
-            code_cl, _ = CodeCL.objects.get_or_create(
-                name='admin'
-            )
-            EntityCode.objects.get_or_create(
-                code_cl=code_cl,
-                entity=entity,
-                code=properties[code]
-            )
+        code_cl, _ = CodeCL.objects.get_or_create(
+            name='admin'
+        )
+        EntityCode.objects.get_or_create(
+            code_cl=code_cl,
+            entity=entity,
+            code=properties[code]
+        )
 
         if level > 0:
             try:
-                parent_field = f'admin{level - 1}{name_field}'
+                parent_label_field = name_field.replace(
+                    f'{level}', f'{level - 1}', 1
+                )
+                parent_code_field = code_field.replace(
+                    f'{level}', f'{level - 1}', 1
+                )
                 parent = GeographicalEntity.objects.get(
-                    label__iexact=properties[parent_field],
+                    label__iexact=properties[parent_label_field],
+                    internal_code__iexact=properties[parent_code_field],
                     level=level - 1
                 )
                 entity.parent = parent

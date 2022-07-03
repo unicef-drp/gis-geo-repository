@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework.test import APIRequestFactory
 
 from georepo.api_views.reference_layer_list import ReferenceLayerList
-from georepo.tests.model_factories import *
+from georepo.tests.model_factories import *  # noqa
 
 
 def mocked_cache_get(self, *args, **kwargs):
@@ -15,6 +15,7 @@ def mocked_cache_get(self, *args, **kwargs):
         [('name', 'entity 0'),
          ('identifier', UUID('4685e7fe-5996-48aa-9e56-98820f53a7b2'))]
     )
+
 
 class TestApiCache(TestCase):
 
