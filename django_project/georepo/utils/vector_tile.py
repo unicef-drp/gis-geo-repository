@@ -37,12 +37,13 @@ def create_configuration_file(dataset: Dataset) -> str:
 
     for level in levels:
         sql = (
-            'SELECT ST_AsBinary(geometry) AS geometry, gg.id, gg.label, '
-            'gg.level, ge.label as type, g.code '
+            'SELECT ST_AsBinary(gg.geometry) AS geometry, gg.id, gg.label, '
+            'gg.level, ge.label as type, gg.internal_code as code,'
+            'pg.internal_code as parent_code '
             'FROM georepo_geographicalentity gg '
             'INNER JOIN georepo_entitytype ge on ge.id = gg.type_id '
-            'INNER JOIN georepo_entitycode g on gg.id = g.entity_id '
-            'WHERE geometry && !BBOX! and level = {level} '
+            'LEFT JOIN georepo_geographicalentity pg on pg.id = gg.parent_id '
+            'WHERE gg.geometry && !BBOX! and gg.level = {level}'
             'AND gg.dataset_id = {dataset_id}'.
             format(
                 level=level,
@@ -75,6 +76,10 @@ def create_configuration_file(dataset: Dataset) -> str:
 
 def generate_vector_tiles(dataset: Dataset, overwrite: bool = False):
     toml_config_file = create_configuration_file(dataset)
+    bounds = (
+        ','.join([str(x) for x in dataset.geographicalentity_set.filter(
+        level=0).first().geometry.extent])
+    )
     subprocess.Popen(
         [
             '/opt/tegola',
@@ -82,6 +87,8 @@ def generate_vector_tiles(dataset: Dataset, overwrite: bool = False):
             'seed',
             '--config',
             toml_config_file,
+            '--bounds',
+            bounds,
             '--min-zoom',
             '1',
             '--max-zoom',
