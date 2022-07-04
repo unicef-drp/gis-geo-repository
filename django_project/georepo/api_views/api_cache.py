@@ -1,3 +1,5 @@
+import ast
+
 from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,9 +12,11 @@ class ApiCache(APIView):
         raise NotImplementedError
 
     def get(self, request, *args, **kwargs):
-        cached_data = self.get_cache()
-        if cached_data:
-            return Response(cached_data)
+        if ast.literal_eval(
+            request.GET.get('cached', 'True')):
+            cached_data = self.get_cache()
+            if cached_data:
+                return Response(cached_data)
 
         response_data = self.get_response_data(
             request, *args, **kwargs
