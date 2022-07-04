@@ -132,13 +132,9 @@ class DetailedEntitySerializer(EntitySerializer):
         return '-'
 
     def get_levels(self, obj: GeographicalEntity):
-        all_children = obj.get_all_children()
-        levels = []
-        entities = []
-        for entity in all_children:
-            if entity.level not in levels:
-                levels.append(entity.level)
-                entities.append(entity)
+        entities = GeographicalEntity.objects.filter(
+            dataset_id=obj.dataset.id
+        ).distinct('level')
         return LevelEntitySerializer(
             entities,
             context={
