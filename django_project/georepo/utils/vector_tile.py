@@ -3,7 +3,6 @@ import subprocess
 import logging
 import toml
 import os
-import time
 
 from core.settings.utils import absolute_path
 from georepo.models import Dataset
