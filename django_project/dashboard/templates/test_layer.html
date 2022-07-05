@@ -25,136 +25,110 @@
 <body>
 <div id="map"></div>
 <script>
+    var layerBaseUrl = 'https://staging.georepo.kartoza.com';
     var map = new maplibregl.Map({
         container: 'map',
         style:
             'https://api.maptiler.com/maps/hybrid/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
         zoom: 5,
-        center: [45.318161, 5]
+        center: [31.1656, 48.3794]
     });
 
     var nav = new maplibregl.NavigationControl();
     map.addControl(nav, 'top-right');
 
     map.on('load', function () {
-        map.addSource('Somalia', {
+        map.addSource('Country', {
           'type': 'vector',
-          "tiles": ["https://staging.georepo.kartoza.com/layer_tiles/Somalia/{z}/{x}/{y}"],
+          'tiles': [
+              layerBaseUrl + "/layer_tiles/Ukraine/Country/{z}/{x}/{y}",
+          ],
+          "tolerance": 0
+        });
+        map.addSource('Hromada', {
+          'type': 'vector',
+          'tiles': [
+              layerBaseUrl + "/layer_tiles/Ukraine/Hromada/{z}/{x}/{y}",
+          ],
+          "tolerance": 0
+        });
+        map.addSource('Oblast', {
+          'type': 'vector',
+          'tiles': [
+              layerBaseUrl + "/layer_tiles/Ukraine/Oblast/{z}/{x}/{y}",
+          ],
+          "tolerance": 0
+        });
+        map.addSource('Raion', {
+          'type': 'vector',
+          'tiles': [
+              layerBaseUrl + "/layer_tiles/Ukraine/Raion/{z}/{x}/{y}",
+          ],
           "tolerance": 0
         });
 
         map.addLayer({
-          "id": "region",
-          "source": "Somalia",
-          "source-layer": "Level-1",
-          "type": "line",
-          "paint": {
-            "line-color": "#b01dda",
-            "line-width": 1
-          }
-        });
-
-        map.addLayer({
-          "id": "country",
-          "source": "Somalia",
-          "source-layer": "Level-0",
-          "type": "line",
-          "paint": {
-            "line-color": "#FF0000",
-            "line-width": 1
-          }
-        });
-
-
-        map.addLayer({
-            "id": "region-text",
-            "source": "Somalia",
-            "source-layer": "Level-1",
-            "type": "symbol",
-            "minzoom": 4,
-            "maxzoom": 6,
-            "layout": {
-                "text-field": '{label}',
-                "text-font": [
-                    "Open Sans"
-                ],
-                "text-size": {
-                    "stops": [
-                        [
-                            12,
-                            12
-                        ],
-                        [
-                            13,
-                            13
-                        ]
-                    ]
-                },
-                'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-
-            },
-            "paint": {
-                "text-color": "rgb(255,255,255)",
-                "text-halo-color": "rgb(96,1,218)",
-                "text-halo-width": 0.8
-            },
-            "symbol-spacing": 500,
-        });
-
-        map.addLayer({
-            "id": "district-line",
-            "source": "Somalia",
-            "source-layer": "Level-2",
-            "minzoom": 6,
-            "maxzoom": 20,
+            "id": "country-line",
+            "source": "Country",
+            "source-layer": "Country",
+            "minzoom": 1,
             "layout": {
                 "visibility": "visible"
             },
             "type": "line",
             "paint": {
-                "line-color": "rgba(0,48,255,0.32)",
+                "line-color": "rgb(252,1,1)",
                 "line-width": 1
             },
         });
 
         map.addLayer({
-            "id": "district-text",
-            "source": "Somalia",
-            "source-layer": "Level-2",
-            "type": "symbol",
-            "minzoom": 6,
-            "maxzoom": 20,
+            "id": "Hromada-line",
+            "source": "Hromada",
+            "source-layer": "Hromada",
+            "minzoom": 1,
             "layout": {
-                "text-field": ['get', 'label'],
-                "text-font": [
-                    "Open Sans Italic"
-                ],
-                "text-size": {
-                    "stops": [
-                        [
-                            12,
-                            12
-                        ],
-                        [
-                            13,
-                            13
-                        ]
-                    ]
-                },
-                "text-anchor": "center",
-                "text-justify": "center"
+                "visibility": "visible"
             },
+            "type": "line",
             "paint": {
-                "text-color": "rgb(255,255,255)",
-                "text-halo-color": "rgb(33,138,138)",
-                "text-halo-width": 1
+                "line-color": "rgba(255,242,0, 0.4)",
+                "line-width": 1
             },
-            "symbol-spacing": 500,
-            "text-anchor": "center"
         });
+
+         map.addLayer({
+            "id": "raion-line",
+            "source": "Raion",
+            "source-layer": "Raion",
+            "minzoom": 1,
+            "layout": {
+                "visibility": "visible"
+            },
+            "type": "line",
+            "paint": {
+                "line-color": "rgba(14,232,32,0.6)",
+                "line-width": 1
+            },
+        });
+
+        map.addLayer({
+            "id": "oblast-line",
+            "source": "Oblast",
+            "source-layer": "Oblast",
+            "minzoom": 1,
+            "layout": {
+                "visibility": "visible"
+            },
+            "type": "line",
+            "paint": {
+                "line-color": "rgba(1,34,252, 0.6)",
+                "line-width": 1
+            },
+        });
+
     });
+
 </script>
 
 </body>

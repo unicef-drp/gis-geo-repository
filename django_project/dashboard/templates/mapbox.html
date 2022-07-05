@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Add a vector tile source</title>
+    <meta name="viewport"
+          content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
+    <script src="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.css"
+          rel="stylesheet"/>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    var map = new maplibregl.Map({
+        container: 'map',
+        style:
+            'https://api.maptiler.com/maps/hybrid/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+        zoom: 5,
+        center: [45.318161, 5]
+    });
+
+    var nav = new maplibregl.NavigationControl();
+    map.addControl(nav, 'top-right');
+
+    map.on('load', function () {
+        map.addSource('Somalia', {
+          'type': 'vector',
+          "tiles": ["http://0.0.0.0:51101/layer_tiles/Somalia/District/{z}/{x}/{y}"],
+          "tolerance": 0
+        });
+
+        map.addLayer({
+          "id": "region",
+          "source": "Somalia",
+          "source-layer": "Level-1",
+          "type": "line",
+          "paint": {
+            "line-color": "#b01dda",
+            "line-width": 1
+          }
+        });
+
+        map.addLayer({
+          "id": "country",
+          "source": "Somalia",
+          "source-layer": "Level-0",
+          "type": "line",
+          "paint": {
+            "line-color": "#FF0000",
+            "line-width": 1
+          }
+        });
+
+
+        map.addLayer({
+            "id": "region-text",
+            "source": "Somalia",
+            "source-layer": "Level-1",
+            "type": "symbol",
+            "minzoom": 4,
+            "maxzoom": 6,
+            "layout": {
+                "text-field": '{label}',
+                "text-font": [
+                    "Open Sans"
+                ],
+                "text-size": {
+                    "stops": [
+                        [
+                            12,
+                            12
+                        ],
+                        [
+                            13,
+                            13
+                        ]
+                    ]
+                },
+                'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+                'text-radial-offset': 0.5,
+                'text-justify': 'auto',
+
+            },
+            "paint": {
+                "text-color": "rgb(255,255,255)",
+                "text-halo-color": "rgb(96,1,218)",
+                "text-halo-width": 0.8
+            },
+            "symbol-spacing": 500,
+        });
+
+        map.addLayer({
+            "id": "district-line",
+            "source": "Somalia",
+            "source-layer": "Level-2",
+            "minzoom": 6,
+            "maxzoom": 20,
+            "layout": {
+                "visibility": "visible"
+            },
+            "type": "line",
+            "paint": {
+                "line-color": "rgba(0,48,255,0.32)",
+                "line-width": 1
+            },
+        });
+
+        map.addLayer({
+            "id": "district-text",
+            "source": "Somalia",
+            "source-layer": "Level-2",
+            "type": "symbol",
+            "minzoom": 6,
+            "maxzoom": 20,
+            "layout": {
+                "text-field": ['get', 'label'],
+                "text-font": [
+                    "Open Sans Italic"
+                ],
+                "text-size": {
+                    "stops": [
+                        [
+                            12,
+                            12
+                        ],
+                        [
+                            13,
+                            13
+                        ]
+                    ]
+                },
+                "text-anchor": "center",
+                "text-justify": "center"
+            },
+            "paint": {
+                "text-color": "rgb(255,255,255)",
+                "text-halo-color": "rgb(33,138,138)",
+                "text-halo-width": 1
+            },
+            "symbol-spacing": 500,
+            "text-anchor": "center"
+        });
+    });
+</script>
+
+</body>
+</html>

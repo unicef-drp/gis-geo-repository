@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import logging
 import toml
@@ -30,12 +31,18 @@ def create_configuration_file(dataset: Dataset) -> str:
 
     entities = dataset.geographicalentity_set.all().order_by('level')
     levels = entities.values_list('level', flat=True).distinct()
-    toml_data['maps'] = [{
-        'name': dataset.label,
-        'layers': []
-    }]
+    toml_data['maps'] = []
+
+    toml_data['cache']['basepath'] = '${LAYER_TILES_PATH}/' + dataset.label
 
     for level in levels:
+        entity = dataset.geographicalentity_set.filter(
+            level=level
+        ).first()
+        if not entity:
+            entity_type = str(level)
+        else:
+            entity_type = entity.type.label
         sql = (
             'SELECT ST_AsBinary(gg.geometry) AS geometry, gg.id, gg.label, '
             'gg.level, ge.label as type, gg.internal_code as code,'
@@ -50,7 +57,7 @@ def create_configuration_file(dataset: Dataset) -> str:
                 dataset_id=dataset.id
             ))
         provider_layer = {
-            'name': f'Level-{level}',
+            'name': entity_type,
             'geometry_fieldname': 'geometry',
             'id_fieldname': 'id',
             'sql': sql,
@@ -61,8 +68,12 @@ def create_configuration_file(dataset: Dataset) -> str:
         toml_data['providers'][0]['layers'].append(
             provider_layer
         )
-        toml_data['maps'][0]['layers'].append({
-            'provider_layer': f'docker_postgis.{provider_layer["name"]}'
+
+        toml_data['maps'].append({
+            'name': entity_type,
+            'layers': [{
+                'provider_layer': f'docker_postgis.{provider_layer["name"]}'
+            }]
         })
 
     toml_dataset_file = open(toml_dataset_filepath, 'w')
@@ -76,6 +87,13 @@ def create_configuration_file(dataset: Dataset) -> str:
 
 def generate_vector_tiles(dataset: Dataset, overwrite: bool = False):
     toml_config_file = create_configuration_file(dataset)
+    if overwrite:
+        path = os.path.join(
+            os.environ.get('LAYER_TILES_PATH', ''),
+            dataset.label
+        )
+        if os.path.exists:
+            shutil.rmtree(path)
     bounds = (
         ','.join([str(x) for x in dataset.geographicalentity_set.filter(
             level=0).first().geometry.extent])
@@ -97,6 +115,6 @@ def generate_vector_tiles(dataset: Dataset, overwrite: bool = False):
         ]
     )
     dataset.vector_tiles_path = (
-        f'/layer_tiles/{dataset.label}/{{z}}/{{x}}/{{y}}?t={int(time.time())}'
+        f'/layer_tiles/{dataset.label}/'
     )
     dataset.save()

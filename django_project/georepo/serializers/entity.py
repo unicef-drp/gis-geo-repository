@@ -1,3 +1,5 @@
+import os.path
+
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from django.urls import reverse
@@ -8,6 +10,7 @@ class LevelEntitySerializer(serializers.ModelSerializer):
     level_name = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     vector_layer = serializers.SerializerMethodField()
+    vector_tiles = serializers.SerializerMethodField()
 
     class Meta:
         model = GeographicalEntity
@@ -16,11 +19,25 @@ class LevelEntitySerializer(serializers.ModelSerializer):
             'level',
             'level_name',
             'url',
-            'vector_layer'
+            'vector_layer',
+            'vector_tiles'
         ]
 
     def get_level_name(self, obj):
         return obj.type.label if obj.type else '-'
+
+    def get_vector_tiles(self, obj: GeographicalEntity):
+        if os.path.exists(os.path.join(
+            os.environ.get('LAYER_TILES_PATH', ''),
+            obj.dataset.label,
+            obj.type.label
+        )):
+            return (
+                f'{obj.dataset.vector_tiles_path}'
+                f'{obj.type.label}/{{z}}/{{x}}/{{y}}'
+                f'?t={int(obj.dataset.last_update.timestamp())}'
+            )
+        return ''
 
     def get_url(self, obj: GeographicalEntity):
         uuid = self.context['uuid'] if 'uuid' in self.context else obj.uuid
@@ -113,7 +130,6 @@ class GeographicalGeojsonSerializer(
 
 class DetailedEntitySerializer(EntitySerializer):
     levels = serializers.SerializerMethodField()
-    vector_tiles = serializers.SerializerMethodField()
 
     class Meta:
         model = GeographicalEntity
@@ -122,14 +138,8 @@ class DetailedEntitySerializer(EntitySerializer):
             'identifier',
             'source',
             'levels',
-            'vector_tiles',
             'last_update'
         ]
-
-    def get_vector_tiles(self, obj: GeographicalEntity):
-        if obj.dataset.vector_tiles_path:
-            return f'{obj.dataset.vector_tiles_path}'
-        return '-'
 
     def get_levels(self, obj: GeographicalEntity):
         entities = GeographicalEntity.objects.filter(
