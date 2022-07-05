@@ -78,7 +78,7 @@ def generate_vector_tiles(dataset: Dataset, overwrite: bool = False):
     toml_config_file = create_configuration_file(dataset)
     bounds = (
         ','.join([str(x) for x in dataset.geographicalentity_set.filter(
-        level=0).first().geometry.extent])
+            level=0).first().geometry.extent])
     )
     subprocess.Popen(
         [

@@ -1,4 +1,7 @@
+import math
+
 from rest_framework.generics import get_object_or_404
+from django.core.paginator import Paginator
 
 from georepo.api_views.api_cache import ApiCache
 from georepo.models import GeographicalEntity, Dataset
@@ -40,6 +43,9 @@ class ReferenceLayerEntityList(ApiCache):
     def get_response_data(self, request, *args, **kwargs):
         uuid = kwargs.get('uuid', None)
         entity_type = kwargs.get('entity_type', None)
+        page = int(request.GET.get('page', '1'))
+        page_size = int(request.GET.get('page_size', '50'))
+
         try:
             entity_layer = GeographicalEntity.objects.get(
                 uuid=uuid
@@ -56,10 +62,22 @@ class ReferenceLayerEntityList(ApiCache):
                 type__label=entity_type
             )
 
-        geojson_output = (
-            self.get_serializer()(entities, many=True).data
-        )
-        return geojson_output
+        paginator = Paginator(entities, page_size)
+        total_page = math.ceil(paginator.count / page_size)
+        if page > total_page:
+            output = []
+        else:
+            paginated_entities = paginator.get_page(page)
+            output = (
+                self.get_serializer()(
+                    paginated_entities, many=True).data
+            )
+        return {
+            'page': page,
+            'total_page': total_page,
+            'page_size': page_size,
+            'results': output
+        }
 
 
 class ReferenceLayerGeojson(ReferenceLayerEntityList):
