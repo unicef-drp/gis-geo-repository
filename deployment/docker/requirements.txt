@@ -1,4 +1,4 @@
-Django==3.2.13
+Django==4.0.6
 django-braces==1.15.0
 djangorestframework==3.13.1
 djangorestframework-gis==1.0
