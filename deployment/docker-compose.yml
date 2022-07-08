@@ -9,6 +9,7 @@ volumes:
   layer-tiles:
   database:
   django-cache:
+  nginx-cache:
 
 x-common-django:
   &default-common-django
@@ -66,5 +67,6 @@ services:
       - static-data:/home/web/static
       - media-data:/home/web/media
       - layer-tiles:/home/web/layer_tiles
+      - nginx-cache:/home/web/nginx_cache
     links:
       - django
