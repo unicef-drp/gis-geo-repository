@@ -11,6 +11,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'django_json_widget',
     'oauth2_provider',
     'corsheaders',
+    'guardian',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -39,3 +40,8 @@ OAUTH2_PROVIDER = {
         'groups': 'Access to your groups'}
 }
 CORS_ORIGIN_ALLOW_ALL = True
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # default
+    'guardian.backends.ObjectPermissionBackend',
+)

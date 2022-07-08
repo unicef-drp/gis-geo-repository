@@ -9,7 +9,7 @@ from georepo.api_views.reference_layer import (
     ReferenceLayerEntityList,
     ReferenceLayerDetail
 )
-from georepo.api_views.protected_api import ProtectedApi
+from georepo.api_views.protected_api import IsAllowedAPI
 
 
 urlpatterns = [
@@ -38,7 +38,7 @@ urlpatterns = [
         name='reference-layer-list'),
     re_path(
         r'api/protected/?$',
-        ProtectedApi.as_view(),
+        IsAllowedAPI.as_view(),
         name='protected-api'
     )
 ]
