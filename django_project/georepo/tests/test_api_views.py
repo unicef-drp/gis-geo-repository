@@ -1,4 +1,5 @@
 import uuid
+import mock
 
 from django.test import TestCase
 from django.urls import reverse
@@ -9,8 +10,9 @@ from georepo.api_views.reference_layer import (
     ReferenceLayerDetail,
     ReferenceLayerEntityList
 )
+from georepo.api_views.protected_api import IsDatasetAllowedAPI
 from georepo.tests.model_factories import (
-    GeographicalEntityF, EntityTypeF, DatasetF
+    GeographicalEntityF, EntityTypeF, DatasetF, UserF
 )
 
 
@@ -26,6 +28,29 @@ class TestApiViews(TestCase):
             dataset=self.dataset
         )
         self.factory = APIRequestFactory()
+
+    @mock.patch('georepo.api_views.protected_api.IsDatasetAllowedAPI.has_perm',
+                mock.Mock(side_effect=[True]))
+    def test_is_dataset_allowed_api(self):
+        user = UserF.create(username='test')
+
+        # Without request url
+        request = self.factory.post(
+            reverse('dataset-allowed-api') +
+            f'?token={str(user.auth_token)}'
+        )
+        view = IsDatasetAllowedAPI.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 403)
+
+        request = self.factory.post(
+            reverse('dataset-allowed-api') +
+            f'?token={str(user.auth_token)}' +
+            f'&request_url=/t/{self.dataset.label}/City/'
+        )
+        view = IsDatasetAllowedAPI.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_reference_layer_detail(self):
         kwargs = {

@@ -23,9 +23,8 @@ schema_view = get_schema_view(
 admin.autodiscover()
 
 urlpatterns = [
-    re_path(r'^$',
-        schema_view.with_ui('swagger', cache_timeout=0),
-        name='schema-swagger-ui'),
+    re_path(r'^$', schema_view.with_ui('swagger', cache_timeout=0),
+            name='schema-swagger-ui'),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^auth/', include('django.contrib.auth.urls')),
     re_path(r'', include('georepo.urls')),

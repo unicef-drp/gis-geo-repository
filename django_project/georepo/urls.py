@@ -1,4 +1,4 @@
-from django.urls import path, re_path, include
+from django.urls import path, re_path
 from django.views.generic import TemplateView
 
 from georepo.api_views.reference_layer_list import (
@@ -9,16 +9,13 @@ from georepo.api_views.reference_layer import (
     ReferenceLayerEntityList,
     ReferenceLayerDetail
 )
-from georepo.api_views.protected_api import IsAllowedAPI
+from georepo.api_views.protected_api import IsDatasetAllowedAPI
 
 
 urlpatterns = [
     path('layer-test/', TemplateView.as_view(
         template_name='test_layer.html'
     )),
-    re_path(r'^o/',
-            include('oauth2_provider.urls',
-                    namespace='oauth2_provider')),
     re_path(
         r'api/reference-layer/(?P<uuid>[\da-f-]+)/(?P<entity_type>\w+)/?$',
         ReferenceLayerGeojson.as_view(),
@@ -38,7 +35,7 @@ urlpatterns = [
         name='reference-layer-list'),
     re_path(
         r'api/protected/?$',
-        IsAllowedAPI.as_view(),
-        name='protected-api'
+        IsDatasetAllowedAPI.as_view(),
+        name='dataset-allowed-api'
     )
 ]

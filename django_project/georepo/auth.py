@@ -1,16 +1,16 @@
-from oauth2_provider.models import AccessToken
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework.authentication import TokenAuthentication
 
 
-class CustomTokenAuthentication(OAuth2Authentication):
-
-    def authenticate_header(self, request):
-        return None
+class CustomTokenAuthentication(TokenAuthentication):
+    """
+    Customized token based authentication.
+    Clients should authenticate by passing the token key in the url.
+    For example:
+        &token={token_key}
+    """
 
     def authenticate(self, request):
         token = request.GET.get('token', '')
         if token:
-            access_token = AccessToken.objects.get(token=token)
-            request.auth = access_token
-            request.META['HTTP_AUTHORIZATION'] = f'Bearer {token}'
+            request.META['HTTP_AUTHORIZATION'] = f'Token {token}'
         return super(CustomTokenAuthentication, self).authenticate(request)
