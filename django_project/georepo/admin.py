@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db import models
 from django_json_widget.widgets import JSONEditorWidget
+from guardian.admin import GuardedModelAdmin
 from georepo.models import (
     GeographicalEntity,
     Language,
@@ -38,7 +39,7 @@ def generate_vector_tiles(modeladmin, request, queryset):
         generate_vector_tiles(dataset, True)
 
 
-class DatasetAdmin(admin.ModelAdmin):
+class DatasetAdmin(GuardedModelAdmin):
     list_display = ('label', )
     actions = [generate_vector_tiles]
 

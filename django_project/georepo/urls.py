@@ -9,6 +9,7 @@ from georepo.api_views.reference_layer import (
     ReferenceLayerEntityList,
     ReferenceLayerDetail
 )
+from georepo.api_views.protected_api import IsDatasetAllowedAPI
 
 
 urlpatterns = [
@@ -32,4 +33,9 @@ urlpatterns = [
         r'api/reference-layer/list/?$',
         ReferenceLayerList.as_view(),
         name='reference-layer-list'),
+    re_path(
+        r'api/protected/?$',
+        IsDatasetAllowedAPI.as_view(),
+        name='dataset-allowed-api'
+    )
 ]

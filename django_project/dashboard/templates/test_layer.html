@@ -39,7 +39,7 @@
     map.on('load', function () {
         map.addSource('Somalia', {
           'type': 'vector',
-          "tiles": ["https://staging.georepo.kartoza.com/layer_tiles/Somalia/{z}/{x}/{y}"],
+          "tiles": ["/layer_tiles/Somalia/Country/{z}/{x}/{y}"],
           "tolerance": 0
         });
 
@@ -57,7 +57,7 @@
         map.addLayer({
           "id": "country",
           "source": "Somalia",
-          "source-layer": "Level-0",
+          "source-layer": "Country",
           "type": "line",
           "paint": {
             "line-color": "#FF0000",

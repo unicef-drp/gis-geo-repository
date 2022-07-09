@@ -5,7 +5,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from django.conf import settings
-from django.conf.urls import url, include
+from django.urls import re_path, include
 from django.conf.urls.static import static
 from django.contrib import admin
 
@@ -23,13 +23,12 @@ schema_view = get_schema_view(
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^$',
-        schema_view.with_ui('swagger', cache_timeout=0),
-        name='schema-swagger-ui'),
-    url(r'^admin/', admin.site.urls),
-    url(r'^auth/', include('django.contrib.auth.urls')),
-    url(r'', include('georepo.urls')),
-    url(r'', include('dashboard.urls'))
+    re_path(r'^$', schema_view.with_ui('swagger', cache_timeout=0),
+            name='schema-swagger-ui'),
+    re_path(r'^admin/', admin.site.urls),
+    re_path(r'^auth/', include('django.contrib.auth.urls')),
+    re_path(r'', include('georepo.urls')),
+    re_path(r'', include('dashboard.urls'))
 ]
 
 if settings.DEBUG:

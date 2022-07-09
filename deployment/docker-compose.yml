@@ -9,6 +9,7 @@ volumes:
   layer-tiles:
   database:
   django-cache:
+  nginx-cache:
 
 x-common-django:
   &default-common-django
@@ -19,6 +20,8 @@ x-common-django:
     - DATABASE_USERNAME=${DATABASE_USERNAME:-docker}
     - DATABASE_PASSWORD=${DATABASE_PASSWORD:-docker}
     - DATABASE_HOST=${DATABASE_HOST:-db}
+    - REDIS_HOST=${REDIS_HOST:-redis}
+    - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_password}
     - RABBITMQ_HOST=${RABBITMQ_HOST:-rabbitmq}
     - LAYER_TILES_PATH=${LAYER_TILES_PATH:-/opt/layer_tiles}
     - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-core.settings.prod}
@@ -39,6 +42,12 @@ x-common-django:
   restart: on-failure
 
 services:
+  redis:
+    image: bitnami/redis:7.0.2
+    container_name: "georepo_redis"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_password}
+
   db:
     image: kartoza/postgis:14-3.2
     container_name: "georepo_db"
@@ -66,5 +75,6 @@ services:
       - static-data:/home/web/static
       - media-data:/home/web/media
       - layer-tiles:/home/web/layer_tiles
+      - nginx-cache:/home/web/nginx_cache
     links:
       - django

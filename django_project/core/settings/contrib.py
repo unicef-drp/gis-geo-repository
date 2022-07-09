@@ -6,9 +6,12 @@ from .base import *  # noqa
 INSTALLED_APPS = INSTALLED_APPS + (
     'rest_framework',
     'rest_framework_gis',
+    'rest_framework.authtoken',
     'drf_yasg',
     'webpack_loader',
     'django_json_widget',
+    'corsheaders',
+    'guardian',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -21,5 +24,19 @@ WEBPACK_LOADER = {
     }
 }
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
 }
+CORS_ORIGIN_ALLOW_ALL = True
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # default
+    'guardian.backends.ObjectPermissionBackend',
+)

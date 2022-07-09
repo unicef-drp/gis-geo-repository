@@ -1,10 +1,16 @@
 import factory
+from django.contrib.auth import get_user_model
 
 from georepo.models import (
     Dataset,
     GeographicalEntity,
     EntityType
 )
+
+
+class UserF(factory.django.DjangoModelFactory):
+    class Meta:
+        model = get_user_model()
 
 
 class DatasetF(factory.django.DjangoModelFactory):

@@ -2,11 +2,13 @@ import ast
 
 from django.core.cache import cache
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 
 class ApiCache(APIView, LimitOffsetPagination):
+    permission_classes = [AllowAny]
     cache_model = None
 
     def get_response_data(self, request, *args, **kwargs):
