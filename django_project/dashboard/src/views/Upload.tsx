@@ -27,7 +27,7 @@ function UploadComponent (props: any)  {
     };
 
     return (
-        <Card sx={{ minWidth: 300, marginTop: 1 }}>
+        <Card sx={{ minWidth: 730, marginTop: 1 }}>
             <CardContent>
                 <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
                     {meta.type}
@@ -64,7 +64,7 @@ function Uploader() {
     const [labelFormat, setLabelFormat] = useState('admin_{level}');
     const [codeFormat, setCodeFormat] = useState('code_{level}');
     const [dataset, setDataset] = useState('');
-    const [entityTypes, setEntityTypes] = useState<Level | undefined>({})
+    const [entityTypes, setEntityTypes] = useState<EntityType | undefined>({})
     const [levels, setLevels] = useState<Level | undefined>({})
 
     // @ts-ignore

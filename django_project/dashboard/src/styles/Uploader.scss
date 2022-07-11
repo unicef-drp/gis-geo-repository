@@ -11,7 +11,7 @@ html, body, #app, .App {
 }
 
 .uploader-container {
-  width: 80%;
+  width: 785px;
 }
 
 .layer-format {
@@ -21,4 +21,9 @@ html, body, #app, .App {
 .layer-format .MuiFormControl-root {
   margin-right: 10px;
   margin-left: 10px;
+}
+
+.dzu-dropzone .MuiPaper-root {
+  width: auto;
+  padding: 10px;
 }

@@ -35,5 +35,24 @@ class LayerFile(models.Model):
         max_length=512
     )
 
+    level = models.CharField(
+        default='',
+        blank=True,
+        max_length=128
+    )
+
+    entity_type = models.CharField(
+        default='',
+        blank=True,
+        max_length=256
+    )
+
+    layer_upload_session = models.ForeignKey(
+        'dashboard.LayerUploadSession',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
     def __str__(self):
         return self.name
