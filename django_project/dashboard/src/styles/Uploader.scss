@@ -1,0 +1,24 @@
+html, body, #app, .App {
+  height: 100%;
+}
+
+.content-body {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.uploader-container {
+  width: 80%;
+}
+
+.layer-format {
+  margin-bottom: 20px;
+}
+
+.layer-format .MuiFormControl-root {
+  margin-right: 10px;
+  margin-left: 10px;
+}

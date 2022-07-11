@@ -12,6 +12,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'django_json_widget',
     'corsheaders',
     'guardian',
+    'django_cleanup.apps.CleanupConfig',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {
