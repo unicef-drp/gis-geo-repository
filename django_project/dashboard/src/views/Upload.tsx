@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import '../styles/Uploader.scss';
 import '../styles/RDU.styles.scss';
 import Dropzone from 'react-dropzone-uploader'
@@ -73,6 +73,7 @@ function Uploader() {
     const [loading, setLoading] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
     const [isError, setIsError] = useState(false)
+    const [formValid, setFormValid] = useState(false)
     const dropZone = useRef(null)
 
     // @ts-ignore
@@ -92,6 +93,27 @@ function Uploader() {
         return {url: '/api/layer-upload/', body, headers}
     }
 
+    useEffect(() => {
+        const currentFiles = dropZone.current.files
+        let allFilesValid = true
+        for (let file of currentFiles) {
+            if (!levels[file.meta.id]) {
+                allFilesValid = false
+                break
+            }
+            if (!entityTypes[file.meta.id]) {
+                allFilesValid = false
+                break
+            }
+        }
+
+        if (currentFiles.length > 0 && dataset && labelFormat && codeFormat && allFilesValid) {
+            setFormValid(true)
+        } else {
+            setFormValid(false)
+        }
+    }, [dataset, labelFormat, codeFormat, levels])
+
     // called every time a file's `status` changes
     // @ts-ignore
     const handleChangeStatus = ({meta, file}, status) => {
@@ -105,7 +127,7 @@ function Uploader() {
             _entityTypes[meta.id] = ''
             setEntityTypes(_entityTypes)
         }
-        if (status === 'removed' && !meta.processing) {
+        if (status === 'removed') {
             delete _levels[meta.id]
             delete _entityTypes[meta.id]
             fetch('/api/layer-remove/', {
@@ -223,7 +245,7 @@ function Uploader() {
                                        variant="outlined">
                             Processing...
                         </LoadingButton> :
-                        <Button onClick={handleSubmit} variant="contained">
+                        <Button onClick={handleSubmit} variant="contained" disabled={!formValid}>
                             Submit
                         </Button>
                     }
