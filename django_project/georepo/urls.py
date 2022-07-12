@@ -1,11 +1,6 @@
 from django.urls import path, re_path
 from django.views.generic import TemplateView
 
-from georepo.api_views.layer_upload import (
-    LayerUploadView,
-    LayersProcessView,
-    LayerRemoveView
-)
 from georepo.api_views.reference_layer_list import (
     ReferenceLayerList
 )
@@ -15,7 +10,6 @@ from georepo.api_views.reference_layer import (
     ReferenceLayerDetail
 )
 from georepo.api_views.protected_api import IsDatasetAllowedAPI
-from georepo.views.uploader import UploaderView
 
 urlpatterns = [
     path('layer-test/', TemplateView.as_view(
@@ -43,24 +37,4 @@ urlpatterns = [
         IsDatasetAllowedAPI.as_view(),
         name='dataset-allowed-api'
     ),
-    re_path(
-        r'upload/?$',
-        UploaderView.as_view(),
-        name='upload'
-    ),
-    re_path(
-        r'api/layer-upload/?$',
-        LayerUploadView.as_view(),
-        name='layer-upload'
-    ),
-    re_path(
-        r'api/layer-remove/?$',
-        LayerRemoveView.as_view(),
-        name='layer-remove'
-    ),
-    re_path(
-        r'api/layers-process/?$',
-        LayersProcessView.as_view(),
-        name='layers-process'
-    )
 ]
