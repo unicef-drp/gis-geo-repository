@@ -4,6 +4,7 @@ DONE = 'Done'
 PENDING = 'Pending'
 CANCELED = 'Canceled'
 PROCESSING = 'Processing'
+ERROR = 'Error'
 
 
 class LayerUploadSession(models.Model):
@@ -11,6 +12,7 @@ class LayerUploadSession(models.Model):
         (DONE, DONE),
         (PENDING, PENDING),
         (CANCELED, CANCELED),
+        (ERROR, ERROR),
         (PROCESSING, PROCESSING)
     )
 
@@ -45,6 +47,11 @@ class LayerUploadSession(models.Model):
         max_length=128,
         null=False,
         blank=False
+    )
+
+    message = models.TextField(
+        null=True,
+        blank=True
     )
 
     progress = models.TextField(

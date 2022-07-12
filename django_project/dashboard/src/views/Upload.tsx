@@ -66,6 +66,7 @@ function Uploader() {
     const [dataset, setDataset] = useState('');
     const [entityTypes, setEntityTypes] = useState<EntityType | undefined>({})
     const [levels, setLevels] = useState<Level | undefined>({})
+    const [error, setError] = useState('')
 
     // @ts-ignore
     const _csrfToken = csrfToken || '';
@@ -88,9 +89,13 @@ function Uploader() {
     // @ts-ignore
     const handleChangeStatus = ({meta, file}, status) => {
         console.log(status, meta, file)
-        if (status === 'done') {
-            setLevels({...levels, [meta.id]: ''})
-            setEntityTypes({...entityTypes, [meta.id]: ''})
+        if (status === 'preparing') {
+            const _levels = levels
+            _levels[meta.id] = ''
+            setLevels(_levels)
+            const _entityTypes = entityTypes
+            _entityTypes[meta.id] = ''
+            setEntityTypes(_entityTypes)
         }
     }
 
@@ -101,10 +106,19 @@ function Uploader() {
 
     // receives array of files that are done uploading when submit button is clicked
     const handleSubmit = (files: { meta: any; }[], allFiles: { remove: () => any; }[]) => {
-        console.log(files.map((f: { meta: any; }) => f.meta))
-        allFiles.forEach((f: { remove: () => any; }) => f.remove())
+        // allFiles.forEach((f: { remove: () => any; }) => f.remove())
         console.log(entityTypes)
         console.log(levels)
+
+        const postData = {
+            'entity_types': entityTypes,
+            'levels': levels,
+            'all_files': files.map((f: { meta: any; }) => f.meta),
+            'dataset': dataset,
+            'code_format': codeFormat,
+            'label_format': labelFormat
+        }
+
         fetch('/api/layers-process/', {
             method: 'POST',
             headers: {
@@ -112,10 +126,21 @@ function Uploader() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': _csrfToken
             },
-            body: JSON.stringify({
-                allFiles: allFiles
-            })
-        });
+            body: JSON.stringify(postData)
+        }).then( response => {
+            if (response.ok) {
+                return response.json()
+            }
+            throw response
+        }).then(data => console.log(data)
+        ).catch(
+            error => {
+                console.error('Error calling layers-process api :', error)
+                setError(error)
+            }
+        ).finally(() => {
+            allFiles.forEach((f: { remove: () => any; }) => f.remove())
+        })
     }
 
     // @ts-ignore
