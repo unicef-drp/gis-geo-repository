@@ -8,8 +8,11 @@ import {
     CardContent,
     LinearProgress,
     TextField,
-    Typography
+    Typography,
+    Alert,
+    AlertTitle
 } from "@mui/material";
+import LoadingButton from '@mui/lab/LoadingButton';
 
 
 function UploadComponent (props: any)  {
@@ -67,7 +70,9 @@ function Uploader() {
     const [dataset, setDataset] = useState('');
     const [entityTypes, setEntityTypes] = useState<EntityType | undefined>({})
     const [levels, setLevels] = useState<Level | undefined>({})
-    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [alertMessage, setAlertMessage] = useState('')
+    const [isError, setIsError] = useState(false)
     const dropZone = useRef(null)
 
     // @ts-ignore
@@ -121,7 +126,8 @@ function Uploader() {
             }).catch(
                 error => {
                     console.error('Error calling layer-remove api :', error)
-                    setError(error)
+                    setIsError(true)
+                    setAlertMessage('Could not remove the layer, please try again later')
                 }
             )
         }
@@ -133,7 +139,8 @@ function Uploader() {
     }
 
     // receives array of files that are done uploading when submit button is clicked
-    const handleSubmit = (files: { meta: any; }[], allFiles: { remove: () => any; }[]) => {
+    const handleSubmit = () => {
+        const files = dropZone.current.files
         const postData = {
             'entity_types': entityTypes,
             'levels': levels,
@@ -142,6 +149,8 @@ function Uploader() {
             'code_format': codeFormat,
             'label_format': labelFormat
         }
+
+        setLoading(true)
 
         fetch('/api/layers-process/', {
             method: 'POST',
@@ -153,14 +162,24 @@ function Uploader() {
             body: JSON.stringify(postData)
         }).then( response => {
             if (response.ok) {
-                dropZone.current.files = []
-                setLevels({})
-                setEntityTypes({})
+                return response.json()
+            } else {
+                return response.text().then(data => { throw new Error(data) })
+            }
+        }).then( data => {
+            if (data) {
+                setAlertMessage(data['message'])
+                setLoading(false)
+                setIsError(false)
             }
         }).catch(
             error => {
                 console.error('Error calling layers-process api :', error)
-                setError(error)
+                if (error.message) {
+                    setAlertMessage(error.message.replaceAll('"', ''))
+                }
+                setLoading(false)
+                setIsError(true)
             }
         )
     }
@@ -169,24 +188,45 @@ function Uploader() {
     return (
         <div className="App">
             <div className='content-body'>
+                { alertMessage ?
+                <Alert style={{ width: '750px' }} severity={ isError ? 'error' : 'success' }>
+                    <AlertTitle>{ isError ? 'Error' : 'Success' }</AlertTitle>
+                    <p className="display-linebreak">
+                        { alertMessage }
+                    </p>
+                </Alert> : null }
                 <h3>Layer Uploader</h3>
                 <div className='layer-format'>
-                    <TextField id="label-format" label="Dataset" variant="outlined" value={dataset} onChange={(e) => setDataset(e.target.value)}/>
-                    <TextField id="label-format" label="Label Format" variant="outlined" value={labelFormat} onChange={(e) => setLabelFormat(e.target.value)}/>
-                    <TextField id="code-format" label="Pcode Format" variant="outlined" value={codeFormat} onChange={(e) => setCodeFormat(e.target.value)} />
+                    <TextField id="label-format" disabled={loading} label="Dataset" variant="outlined" value={dataset} onChange={(e) => setDataset(e.target.value)}/>
+                    <TextField id="label-format" disabled={loading} label="Label Format" variant="outlined" value={labelFormat} onChange={(e) => setLabelFormat(e.target.value)}/>
+                    <TextField id="code-format" disabled={loading} label="Pcode Format" variant="outlined" value={codeFormat} onChange={(e) => setCodeFormat(e.target.value)} />
                 </div>
                 <div className='uploader-container'>
                      <Dropzone
                          ref={dropZone}
+                         disabled={loading}
+                         SubmitButtonComponent={null}
                          PreviewComponent={(props) => <UploadComponent
                              key={props.meta.id} meta={props.meta}
                              fileWithMeta={props.fileWithMeta}
                              level={levels[props.meta.id]} entityType={entityTypes[props.meta.id]} updateLevelAndEntityType={updateLevelAndEntityType} /> }
                          getUploadParams={getUploadParams}
                          onChangeStatus={handleChangeStatus}
-                         onSubmit={handleSubmit}
+                         onSubmit={null}
                          accept="application/geo+json"
                      />
+                </div>
+                <div className='button-container'>
+                    {loading ?
+                        <LoadingButton loading loadingPosition="start"
+                                       startIcon={<div style={{width: 20}}/>}
+                                       variant="outlined">
+                            Processing...
+                        </LoadingButton> :
+                        <Button onClick={handleSubmit} variant="contained">
+                            Submit
+                        </Button>
+                    }
                 </div>
             </div>
         </div>

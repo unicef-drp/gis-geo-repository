@@ -33,3 +33,15 @@ html, body, #app, .App {
   max-height: 450px;
   overflow: auto;
 }
+
+.button-container {
+  margin-top: 20px;
+}
+
+.button-container button {
+  width: 150px;
+}
+
+.display-linebreak {
+  white-space: pre-line;
+}

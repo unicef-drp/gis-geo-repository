@@ -7,8 +7,10 @@ from rest_framework.views import APIView
 
 from dashboard.models import (
 	LayerFile,
-	LayerUploadSession, PENDING
+	LayerUploadSession, PENDING, PROCESSING, DONE, ERROR
 )
+from georepo.models import EntityType
+from georepo.utils import load_geojson
 
 
 class LayerUploadView(APIView):
@@ -97,5 +99,37 @@ class LayersProcessView(APIView):
 			layer_file_obj.level = level
 			layer_file_obj.save()
 
+		layer_upload_session.status = PROCESSING
+		layer_upload_session.progress = ''
+		layer_upload_session.message = ''
+		layer_upload_session.save()
+		for layer_file in layer_upload_session.layerfile_set.all().order_by(
+				'level'):
+			entity_type, _ = EntityType.objects.get_or_create(
+				label=layer_file.entity_type
+			)
+			loaded, message = load_geojson(
+				layer_file.layer_file.path,
+				int(layer_file.level),
+				entity_type,
+				layer_upload_session.layer_name_format,
+				layer_upload_session.dataset,
+				layer_upload_session.layer_code_format,
+				layer_upload_session.id
+			)
+			if loaded :
+				layer_file.processed = True
+				layer_file.save()
+			else:
+				layer_upload_session.status = ERROR
+				layer_upload_session.save()
+				return Response(status=400, data=message)
+		layer_upload_session = (
+			LayerUploadSession.objects.get(id=layer_upload_session.id)
+		)
+		layer_upload_session.status = DONE
+		layer_upload_session.save()
 
-		return Response(status=200)
+		return Response(status=200, data={
+			'message': layer_upload_session.message
+		})

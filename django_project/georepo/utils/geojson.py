@@ -19,7 +19,7 @@ def load_geojson(
         name_field: str,
         dataset: str = None,
         code_field: str = None,
-        layer_upload_session_id: str = None) -> bool:
+        layer_upload_session_id: str = None) -> (bool, str):
     if not os.path.exists(file_path):
         return False
 
@@ -58,7 +58,7 @@ def load_geojson(
         code = code_field.format(level=level)
 
         if label not in properties or code not in properties:
-            continue
+            return False, 'Label or code format not found in the layer'
 
         entity, created = GeographicalEntity.objects.update_or_create(
             label=properties[label],
@@ -127,4 +127,4 @@ def load_geojson(
             upload_session.message += desc
         upload_session.save()
 
-    return True
+    return True, ''
