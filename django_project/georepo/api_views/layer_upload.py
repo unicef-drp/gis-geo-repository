@@ -29,6 +29,16 @@ class LayerUploadView(APIView):
 		return Response(status=204)
 
 
+class LayerRemoveView(APIView):
+	def post(self, request, format=None):
+		file_meta_id = request.data.get('meta_id')
+		layer_file = LayerFile.objects.get(
+			meta_id=file_meta_id
+		)
+		layer_file.delete()
+		return Response(status=200)
+
+
 class LayersProcessView(APIView):
 	"""
 	Example of POST request payload :

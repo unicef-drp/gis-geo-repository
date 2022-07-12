@@ -3,7 +3,8 @@ from django.views.generic import TemplateView
 
 from georepo.api_views.layer_upload import (
     LayerUploadView,
-    LayersProcessView
+    LayersProcessView,
+    LayerRemoveView
 )
 from georepo.api_views.reference_layer_list import (
     ReferenceLayerList
@@ -51,6 +52,11 @@ urlpatterns = [
         r'api/layer-upload/?$',
         LayerUploadView.as_view(),
         name='layer-upload'
+    ),
+    re_path(
+        r'api/layer-remove/?$',
+        LayerRemoveView.as_view(),
+        name='layer-remove'
     ),
     re_path(
         r'api/layers-process/?$',

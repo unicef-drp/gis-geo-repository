@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import '../styles/Uploader.scss';
 import '../styles/RDU.styles.scss';
 import Dropzone from 'react-dropzone-uploader'
@@ -14,6 +14,7 @@ import {
 
 function UploadComponent (props: any)  {
     const meta = props.meta
+    const fileWithMeta = props.fileWithMeta
     const [level, setLevel] = useState(props.level)
     const [entityType, setEntityType] = useState(props.entityType)
 
@@ -44,7 +45,7 @@ function UploadComponent (props: any)  {
                     setEntityType(entityType)
                 }} onBlur={handleBlur}/>
                 <LinearProgress variant="determinate" value={meta.percent} sx={{ marginTop: 2 }} />
-                <Button variant="outlined" color="error" onClick={() => meta.remove()} sx={{ marginTop: 1 }}>
+                <Button variant="outlined" color="error" onClick={() => fileWithMeta.remove()} sx={{ marginTop: 1 }}>
                   Remove
                 </Button>
             </CardContent>
@@ -67,6 +68,7 @@ function Uploader() {
     const [entityTypes, setEntityTypes] = useState<EntityType | undefined>({})
     const [levels, setLevels] = useState<Level | undefined>({})
     const [error, setError] = useState('')
+    const dropZone = useRef(null)
 
     // @ts-ignore
     const _csrfToken = csrfToken || '';
@@ -89,13 +91,39 @@ function Uploader() {
     // @ts-ignore
     const handleChangeStatus = ({meta, file}, status) => {
         console.log(status, meta, file)
+        const _levels = levels
+        const _entityTypes = entityTypes
+
         if (status === 'preparing') {
-            const _levels = levels
             _levels[meta.id] = ''
             setLevels(_levels)
-            const _entityTypes = entityTypes
             _entityTypes[meta.id] = ''
             setEntityTypes(_entityTypes)
+        }
+        if (status === 'removed' && !meta.processing) {
+            delete _levels[meta.id]
+            delete _entityTypes[meta.id]
+            fetch('/api/layer-remove/', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': _csrfToken
+                },
+                body: JSON.stringify({
+                    'meta_id': meta.id
+                })
+            }).then( response => {
+                if (response.ok) {
+                    setLevels(_levels)
+                    setEntityTypes(_entityTypes)
+                }
+            }).catch(
+                error => {
+                    console.error('Error calling layer-remove api :', error)
+                    setError(error)
+                }
+            )
         }
     }
 
@@ -106,10 +134,6 @@ function Uploader() {
 
     // receives array of files that are done uploading when submit button is clicked
     const handleSubmit = (files: { meta: any; }[], allFiles: { remove: () => any; }[]) => {
-        // allFiles.forEach((f: { remove: () => any; }) => f.remove())
-        console.log(entityTypes)
-        console.log(levels)
-
         const postData = {
             'entity_types': entityTypes,
             'levels': levels,
@@ -129,18 +153,16 @@ function Uploader() {
             body: JSON.stringify(postData)
         }).then( response => {
             if (response.ok) {
-                return response.json()
+                dropZone.current.files = []
+                setLevels({})
+                setEntityTypes({})
             }
-            throw response
-        }).then(data => console.log(data)
-        ).catch(
+        }).catch(
             error => {
                 console.error('Error calling layers-process api :', error)
                 setError(error)
             }
-        ).finally(() => {
-            allFiles.forEach((f: { remove: () => any; }) => f.remove())
-        })
+        )
     }
 
     // @ts-ignore
@@ -155,7 +177,11 @@ function Uploader() {
                 </div>
                 <div className='uploader-container'>
                      <Dropzone
-                         PreviewComponent={(props) => <UploadComponent key={props.meta.id} meta={props.meta} level={levels[props.meta.id]} entityType={entityTypes[props.meta.id]} updateLevelAndEntityType={updateLevelAndEntityType} /> }
+                         ref={dropZone}
+                         PreviewComponent={(props) => <UploadComponent
+                             key={props.meta.id} meta={props.meta}
+                             fileWithMeta={props.fileWithMeta}
+                             level={levels[props.meta.id]} entityType={entityTypes[props.meta.id]} updateLevelAndEntityType={updateLevelAndEntityType} /> }
                          getUploadParams={getUploadParams}
                          onChangeStatus={handleChangeStatus}
                          onSubmit={handleSubmit}
