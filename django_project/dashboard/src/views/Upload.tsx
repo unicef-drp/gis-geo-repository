@@ -185,7 +185,7 @@ function Uploader() {
                          getUploadParams={getUploadParams}
                          onChangeStatus={handleChangeStatus}
                          onSubmit={handleSubmit}
-                         accept="image/*,audio/*,video/*"
+                         accept="application/geo+json"
                      />
                 </div>
             </div>

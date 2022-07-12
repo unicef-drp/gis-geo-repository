@@ -15,20 +15,34 @@ from georepo.models import (
 def load_geojson(
         file_path: str,
         level: int,
-        name_field: str,
         entity_type: EntityType,
+        name_field: str,
         dataset: str = None,
-        code_field: str = None) -> bool:
+        code_field: str = None,
+        layer_upload_session_id: str = None) -> bool:
     if not os.path.exists(file_path):
         return False
 
+    entity_added = 0
+    entity_updated = 0
+
     with open(file_path) as json_file:
         data = json.load(json_file)
+
+    upload_session = None
+    if layer_upload_session_id:
+        from dashboard.models import LayerUploadSession
+        upload_session = LayerUploadSession.objects.get(
+            id=layer_upload_session_id
+        )
 
     if dataset:
         dataset, _ = Dataset.objects.get_or_create(
             label=dataset
         )
+
+    total_features = len(data['features'])
+    index = 1
 
     for feature in data['features']:
         geom_str = json.dumps(feature['geometry'])
@@ -40,13 +54,13 @@ def load_geojson(
             raise TypeError(
                 'Type is not acceptable'
             )
-        label = f'{name_field}'
-        code = f'{code_field}'
+        label = name_field.format(level=level)
+        code = code_field.format(level=level)
 
         if label not in properties or code not in properties:
             continue
 
-        entity, _ = GeographicalEntity.objects.update_or_create(
+        entity, created = GeographicalEntity.objects.update_or_create(
             label=properties[label],
             type=entity_type,
             internal_code=properties[code],
@@ -56,6 +70,15 @@ def load_geojson(
                 'level': level,
             }
         )
+
+        if created:
+            entity_added += 1
+        else:
+            entity_updated += 1
+
+        if upload_session:
+            upload_session.progress = f'Processing ({index}/{total_features})'
+            upload_session.save()
 
         entity.level = level
         entity.save()
@@ -71,11 +94,11 @@ def load_geojson(
 
         if level > 0:
             try:
-                parent_label_field = name_field.replace(
-                    f'{level}', f'{level - 1}', 1
+                parent_label_field = name_field.format(
+                    level=level - 1
                 )
-                parent_code_field = code_field.replace(
-                    f'{level}', f'{level - 1}', 1
+                parent_code_field = code_field.format(
+                    level=level - 1
                 )
                 parent = GeographicalEntity.objects.get(
                     label__iexact=properties[parent_label_field],
@@ -86,5 +109,22 @@ def load_geojson(
                 entity.save()
             except (KeyError, GeographicalEntity.DoesNotExist):
                 pass
+
+        index += 1
+
+    if upload_session:
+        desc = (
+            f'-- {entity_type.label} Entity Type --\n'
+            f'{entity_added} {"entity" if entity_added == 1 else "entities"} '
+            f'is added\n'
+            f'{entity_updated} '
+            f'{"entity" if entity_updated == 1 else "entities"} is updated\n\n'
+
+        )
+        if not upload_session.message:
+            upload_session.message = desc
+        else:
+            upload_session.message += desc
+        upload_session.save()
 
     return True
