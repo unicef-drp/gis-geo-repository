@@ -37,11 +37,14 @@ class Dataset(models.Model):
                 cache_keys['Dataset'] = dataset_keys
                 cache.set('cache_keys', cache_keys)
 
-        dataset_caches = cache._cache.get_client().keys(f'*{self.label}*')
-        if dataset_caches:
-            for dataset_cache in dataset_caches:
-                cache.delete(
-                    str(dataset_cache).split(':')[-1].replace('\'', ''))
+        try:
+            dataset_caches = cache._cache.get_client().keys(f'*{self.label}*')
+            if dataset_caches:
+                for dataset_cache in dataset_caches:
+                    cache.delete(
+                        str(dataset_cache).split(':')[-1].replace('\'', ''))
+        except AttributeError:
+            pass
 
         return super(Dataset, self).save(*args, **kwargs)
 

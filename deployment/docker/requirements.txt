@@ -13,3 +13,4 @@ django-json-widget==1.1.1
 django-cors-headers==3.13.0
 redis==4.3.4
 django-guardian==2.4.0
+django-cleanup==6.0.0

@@ -11,7 +11,6 @@ from georepo.api_views.reference_layer import (
 )
 from georepo.api_views.protected_api import IsDatasetAllowedAPI
 
-
 urlpatterns = [
     path('layer-test/', TemplateView.as_view(
         template_name='test_layer.html'
@@ -37,5 +36,5 @@ urlpatterns = [
         r'api/protected/?$',
         IsDatasetAllowedAPI.as_view(),
         name='dataset-allowed-api'
-    )
+    ),
 ]

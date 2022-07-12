@@ -13,6 +13,7 @@ const minimized = !isDev;
 let conf = {
     entry: {
         App: ['./src/App.tsx'],
+        Uploader: ['./src/Uploader.tsx']
     },
     output: {
         path: path.resolve(__dirname, "./bundles/dashboard"),
@@ -34,6 +35,13 @@ let conf = {
                     "css-loader",
                     // Compiles Sass to CSS
                     "sass-loader",
+                ],
+            },
+            {
+                test: /\.css$/i,
+                use: [
+                    // Translates CSS into CommonJS
+                    "css-loader",
                 ],
             },
         ],
