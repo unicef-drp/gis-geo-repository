@@ -12,6 +12,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'django_json_widget',
     'corsheaders',
     'guardian',
+    'django_cleanup.apps.CleanupConfig',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -40,3 +41,4 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # default
     'guardian.backends.ObjectPermissionBackend',
 )
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

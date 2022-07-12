@@ -40,8 +40,8 @@ class Command(BaseCommand):
         geojson_loaded = load_geojson(
             options['geojson_file'],
             int(options['level']),
-            options['name_field'],
             entity_type,
+            options['name_field'],
             options['dataset'],
             options['code_field']
         )
