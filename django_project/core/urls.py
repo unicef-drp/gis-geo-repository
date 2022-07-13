@@ -18,6 +18,9 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
+    patterns=[
+        re_path(r'', include(('georepo.urls', 'api'), namespace='api'))
+    ],
 )
 
 admin.autodiscover()
