@@ -8,6 +8,10 @@ services:
       - "4432:5432"
 
   django:
+    build:
+      context: ../
+      dockerfile: deployment/docker/Dockerfile
+      target: prod
     volumes:
       - ../django_project:/home/web/django_project
       - ./volumes/static:/home/web/static
@@ -15,6 +19,19 @@ services:
       - ./volumes/tegola_config:/opt/tegola_config
       - ./volumes/layer_tiles:/opt/layer_tiles
       - ./volumes/django_cache:/home/web/django_cache
+
+  auth:
+    build:
+      context: ../
+      dockerfile: deployment/docker/Dockerfile-auth
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/static:/home/web/static
+      - ./volumes/media:/home/web/media
+      - ./volumes/tegola_config:/opt/tegola_config
+      - ./volumes/layer_tiles:/opt/layer_tiles
+      - ./volumes/django_cache:/home/web/django_cache
+
   dev:
     build:
       context: ../
@@ -40,14 +57,15 @@ services:
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
       - ./volumes/layer_tiles:/home/web/layer_tiles
+      - ./volumes/nginx_cache:/home/web/nginx_cache
     ports:
       - "${HTTP_PORT:-8080}:80"
       - "9000:9000"
       - "9001:9001"
     links:
+      - auth
       - django
       - minio
-
 
   minio:
     image: minio/minio:RELEASE.2022-06-17T02-00-35Z.fips
