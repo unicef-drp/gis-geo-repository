@@ -1,6 +1,4 @@
 from django.contrib import admin
-from django.db import models
-from django_json_widget.widgets import JSONEditorWidget
 from guardian.admin import GuardedModelAdmin
 from georepo.models import (
     GeographicalEntity,
@@ -46,9 +44,6 @@ class DatasetAdmin(GuardedModelAdmin):
 
 class LayerStyleAdmin(admin.ModelAdmin):
     list_display = ('label', 'dataset', 'level', 'type')
-    formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
-    }
 
 
 admin.site.register(GeographicalEntity, GeographicalEntityAdmin)

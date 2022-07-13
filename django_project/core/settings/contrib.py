@@ -9,7 +9,6 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'rest_framework.authtoken',
     'drf_yasg',
     'webpack_loader',
-    'django_json_widget',
     'corsheaders',
     'guardian',
     'django_cleanup.apps.CleanupConfig',
