@@ -62,7 +62,15 @@ services:
     container_name: "georepo_django"
     command: 'uwsgi --ini /uwsgi.conf'
 
+  auth:
+    image: kartoza/georepo_auth
+    <<: *default-common-django
+    container_name: "georepo_auth"
+    entrypoint: []
+    command: 'gunicorn --bind 0.0.0.0:8080 -c /home/web/django_project/config/gunicorn/dev.py core.wsgi'
+
   dev:
+    image: kartoza/georepo_dev
     <<: *default-common-django
     container_name: "georepo_dev_django"
     entrypoint: []
