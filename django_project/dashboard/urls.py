@@ -4,6 +4,7 @@ from dashboard.views.uploader import UploaderView
 from dashboard.api_views.layer_upload import (
     LayerUploadView,
     LayersProcessView,
+    LayerProcessStatusView,
     LayerRemoveView
 )
 
@@ -28,6 +29,11 @@ urlpatterns = [
         r'api/layers-process/?$',
         LayersProcessView.as_view(),
         name='layers-process'
+    ),
+    re_path(
+        r'api/layers-process-status/?$',
+        LayerProcessStatusView.as_view(),
+        name='layers-process-status'
     ),
     re_path(r'', DashboardView.as_view(), name='dashboard-view'),
 ]

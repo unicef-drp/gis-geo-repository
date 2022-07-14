@@ -28,6 +28,12 @@ class LayerUploadSession(models.Model):
         max_length=256
     )
 
+    task_id = models.CharField(
+        blank=True,
+        default='',
+        max_length=256
+    )
+
     layer_code_format = models.CharField(
         blank=False,
         null=False,

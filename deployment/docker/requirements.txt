@@ -14,3 +14,6 @@ django-cors-headers==3.13.0
 redis==4.3.4
 django-guardian==2.4.0
 django-cleanup==6.0.0
+celery==5.2.7
+django-celery-beat==2.3.0
+django-celery-results==2.4.0

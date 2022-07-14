@@ -12,6 +12,8 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'corsheaders',
     'guardian',
     'django_cleanup.apps.CleanupConfig',
+    'django_celery_beat',
+    'django_celery_results',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -41,3 +43,4 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
 )
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+CELERY_RESULT_BACKEND = 'django-db'
