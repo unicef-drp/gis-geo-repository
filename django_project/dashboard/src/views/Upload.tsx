@@ -160,6 +160,44 @@ function Uploader() {
         setEntityTypes({ ...entityTypes, [layerId]: entityType })
     }
 
+    const checkLayerProcessingStatus = (uploadSessionId: string) => {
+        fetch('/api/layers-process-status/?session_id=' + uploadSessionId, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': _csrfToken
+            }
+        }).then(response => {
+            if (response.ok) {
+                return response.json()
+            } else {
+                return response.text().then(data => {
+                    throw new Error(data)
+                })
+            }
+        }).then(data => {
+            if (data['status'] === 'Done') {
+                setAlertMessage(data['message'])
+                setLoading(false)
+                setIsError(false)
+            } else if (data['status'] === 'Error') {
+                throw new Error(data['message'])
+            } else {
+                setTimeout(() => {
+                    checkLayerProcessingStatus(uploadSessionId)
+                }, 1000)
+            }
+        }).catch( error => {
+            console.log(error)
+            if (error.message) {
+                setAlertMessage(error.message.replaceAll('"', ''))
+            }
+            setLoading(false)
+            setIsError(true)
+        })
+    }
+
     // receives array of files that are done uploading when submit button is clicked
     const handleSubmit = () => {
         const files = dropZone.current.files
@@ -173,6 +211,8 @@ function Uploader() {
         }
 
         setLoading(true)
+        setAlertMessage('')
+        setIsError(false)
 
         fetch('/api/layers-process/', {
             method: 'POST',
@@ -190,9 +230,7 @@ function Uploader() {
             }
         }).then( data => {
             if (data) {
-                setAlertMessage(data['message'])
-                setLoading(false)
-                setIsError(false)
+                checkLayerProcessingStatus(data['layer_upload_session_id'])
             }
         }).catch(
             error => {
