@@ -1,0 +1,40 @@
+.login-container {
+    font-family: sans-serif;
+    margin-top: 10vh;
+    padding: 20px;
+    border-radius: 5px;
+    width: fit-content;
+    box-shadow: rgba(95, 111, 119, 0.37) 0 0 5px;
+    min-width: 300px;
+}
+
+.login-container form>p {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-container .header {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.login-container button {
+    background: #85ea2d;
+    border-radius: 2px;
+    border: 0;
+    width: 100%;
+    padding: 10px 40px;
+    cursor: pointer;
+}
+
+.login-container input[type=text], input[type=password] {
+    border: 1px solid #bcbcbc;
+    padding: 10px 10px;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+}

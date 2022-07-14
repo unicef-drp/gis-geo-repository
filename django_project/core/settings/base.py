@@ -130,7 +130,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
 )
 
-LOGIN_URL = '/login'
 SITE_ID = 1
 STATICFILES_STORAGE = (
     'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
@@ -145,3 +144,6 @@ CACHES = {
         )
     }
 }
+
+LOGIN_URL = '/account/login/'
+LOGIN_REDIRECT_URL = '/'
